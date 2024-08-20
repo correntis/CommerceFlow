@@ -1,20 +1,29 @@
+using Gateway;
+using Gateway.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddLogging(builder => builder.AddConsole());
+
+var authServiceHost = builder.Configuration["AUTH_HOST"];
+var authServicePort = builder.Configuration["AUTH_PORT"];
+builder.Services.AddSingleton(sp =>
+{
+    var logger = sp.GetRequiredService<ILogger<AuthServiceClient>>();
+
+    var address = $"http://{authServiceHost}:{authServicePort}"; 
+
+    return new AuthServiceClient(logger,address);
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 

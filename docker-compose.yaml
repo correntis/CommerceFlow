@@ -32,11 +32,11 @@ services:
       dockerfile: Dockerfile
     environment:
       - AUTH_HOST=auth-service
-      - AUTH_PORT=5001
+      - AUTH_PORT=8080
     depends_on:
       - auth-service
     ports:
-      - "5000:5204"
+      - "5000:8080"
     networks:
       - commerceflow
 
