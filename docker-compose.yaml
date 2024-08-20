@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  redis-tokens:
+    container_name: redis-tokens
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - commerceflow
+
+  auth-service:
+    container_name: auth-service
+    build:
+      context: ./AuthService
+      dockerfile: Dockerfile
+    environment:
+      - STORAGE_HOST=redis-tokens
+      - STORAGE_PORT=6379
+      - JWT_SECRET=jwt_secret
+    depends_on:
+      - redis-tokens
+    ports:
+      - "5001:8080"
+    networks:
+      - commerceflow
+
+  gateway:
+    container_name: gateway
+    build:
+      context: ./Gateway
+      dockerfile: Dockerfile
+    environment:
+      - AUTH_HOST=auth-service
+      - AUTH_PORT=5001
+    depends_on:
+      - auth-service
+    ports:
+      - "5000:5204"
+    networks:
+      - commerceflow
+
+networks:
+  commerceflow:
