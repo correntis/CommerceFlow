@@ -13,7 +13,7 @@ namespace Gateway.Services
             _address = address;
         }
 
-        public async Task CreateTokens(ulong userId)
+        public async Task<CreateTokensResponse> CreateTokensAsync(ulong userId)   
         {
             _logger.LogInformation("Method - CreateTokens - {Time} - {Address}", DateTime.Now, _address);
             
@@ -26,9 +26,11 @@ namespace Gateway.Services
             };
 
             var response = await client.CreateTokensAsync(request);
+
+            return response;
         }
 
-        public async Task Verify(string accessToken, string refreshToken)
+        public async Task<VerifyResponse> VerifyAsync(string refreshToken)
         {
             _logger.LogInformation("Method - Verify - {Time}", DateTime.Now);
 
@@ -37,11 +39,12 @@ namespace Gateway.Services
 
             var request = new VerifyRequest
             {
-                AccessToken = accessToken,
                 RefreshToken = refreshToken
             };
 
             var response = await client.VerifyAsync(request);
+
+            return response;
         }
     }
 }

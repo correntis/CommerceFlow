@@ -8,6 +8,16 @@ builder.Services.AddLogging(builder =>
     builder.AddConsole();
 });
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    var host = builder.Configuration["STORAGE_HOST"];
+    var port = builder.Configuration["STORAGE_PORT"];
+    var configuration = $"{host}:{port}";
+
+    options.Configuration = configuration;
+    options.InstanceName = "AuthService";
+});
+
 var app = builder.Build();
 
 app.MapGrpcService<AuthServiceImpl>();
