@@ -1,6 +1,8 @@
 using AuthService;
+using AuthService.Infrascructure;
 using Grpc.Core;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -13,12 +15,19 @@ namespace AuthService.Services
         private readonly ILogger<AuthServiceImpl> _logger;
         private readonly IConfiguration _configuration;
         private readonly IDistributedCache _cache;
+        private readonly IOptions<JwtOptions> _jwtOptions;
 
-        public AuthServiceImpl(ILogger<AuthServiceImpl> logger, IConfiguration configuration, IDistributedCache cache)
+        public AuthServiceImpl(
+            ILogger<AuthServiceImpl> logger, 
+            IConfiguration configuration,
+            IDistributedCache cache, 
+            IOptions<JwtOptions> jwtOptions)
         {
             _logger = logger;
             _configuration = configuration;
             _cache = cache;
+            _jwtOptions = jwtOptions;
+
         }
 
         public override async Task<CreateTokensResponse> CreateTokens(CreateTokensRequest request, ServerCallContext context)
@@ -78,7 +87,7 @@ namespace AuthService.Services
         {
             _logger.LogInformation("Issue Access Token");
 
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Value.Key));
 
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
@@ -90,8 +99,8 @@ namespace AuthService.Services
 
             var expiresTime = DateTime.UtcNow.AddMinutes(1);
             var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
+                issuer: _jwtOptions.Value.Issuer,
+                audience: _jwtOptions.Value.Audience,
                 claims: jwtClaims,
                 expires: expiresTime,
                 signingCredentials: credentials                
