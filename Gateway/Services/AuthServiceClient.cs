@@ -6,11 +6,13 @@ namespace Gateway.Services
     public class AuthServiceClient
     {
         private readonly ILogger<AuthServiceClient> _logger;
+        private readonly IConfiguration _configuration;
         private readonly string _address;
-        public AuthServiceClient(ILogger<AuthServiceClient> logger, string address)
+        public AuthServiceClient(ILogger<AuthServiceClient> logger, IConfiguration configuration)
         {
             _logger = logger;
-            _address = address;
+            _configuration = configuration;
+            _address = $"http://{configuration["AUTH_HOST"]}:{configuration["AUTH_PORT"]}";
         }
 
         public async Task<CreateTokensResponse> CreateTokensAsync(ulong userId)   

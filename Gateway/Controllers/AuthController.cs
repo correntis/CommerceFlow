@@ -19,7 +19,7 @@ namespace Gateway.Controllers
         }
 
         [HttpPost("signup")]
-        public async Task<IActionResult> SignUp([FromBody] SignUpModel signUpModel)
+        public async Task<IActionResult> SignUp( [FromBody] SignUpModel signUpModel )
         {
             if (ModelState.IsValid)
             {
@@ -31,10 +31,23 @@ namespace Gateway.Controllers
 
                 var response = await _authService.CreateTokensAsync(userId);
 
+                AppendCookies("accessToken", response.AccessToken, DateTime.UtcNow.AddDays(3));
+                AppendCookies("refreshToken", response.RefreshToken, DateTime.UtcNow.AddMonths(1));
+
                 _logger.LogInformation("Return response with tokens");
+
                 return Ok(response);
             }
             return BadRequest("Invalid Request Body.");
+        }
+
+        private void AppendCookies(string key, string value, DateTimeOffset expiresTime)
+        {
+            HttpContext.Response.Cookies.Append(key, value, new CookieOptions()
+            { 
+                HttpOnly = true,
+                Expires = expiresTime
+            });
         }
 
         [HttpGet("user/{id}")]

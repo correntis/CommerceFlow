@@ -1,20 +1,19 @@
 using AuthService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+var configuration = builder.Configuration;
 
-builder.Services.AddGrpc();
-builder.Services.AddLogging(builder =>
+services.AddGrpc();
+services.AddLogging(builder => { builder.AddConsole(); });
+
+services.AddStackExchangeRedisCache(options =>
 {
-    builder.AddConsole();
-});
+    var host = configuration["STORAGE_HOST"];
+    var port = configuration["STORAGE_PORT"];
+    var redisConfiguration = $"{host}:{port}";
 
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    var host = builder.Configuration["STORAGE_HOST"];
-    var port = builder.Configuration["STORAGE_PORT"];
-    var configuration = $"{host}:{port}";
-
-    options.Configuration = configuration;
+    options.Configuration = redisConfiguration;
     options.InstanceName = "AuthService";
 });
 

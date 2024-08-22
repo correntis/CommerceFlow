@@ -88,13 +88,16 @@ namespace AuthService.Services
                 new(JwtRegisteredClaimNames.Sub, userId.ToString())
             };
 
+            var expiresTime = DateTime.UtcNow.AddMinutes(1);
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: jwtClaims,
-                expires: DateTime.Now.AddDays(3),
+                expires: expiresTime,
                 signingCredentials: credentials                
                 );
+
+            _logger.LogInformation("Access token expires at {Time}", expiresTime);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
