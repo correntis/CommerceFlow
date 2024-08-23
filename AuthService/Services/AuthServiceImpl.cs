@@ -78,8 +78,6 @@ namespace AuthService.Services
                 IsValid = true
             };
 
-            _logger.LogInformation("Return new tokens");
-
             return verifyResponse;
         }
 
@@ -97,7 +95,7 @@ namespace AuthService.Services
                 new(JwtRegisteredClaimNames.Sub, userId.ToString())
             };
 
-            var expiresTime = DateTime.UtcNow.AddMinutes(1);
+            var expiresTime = DateTime.UtcNow.AddDays(3);
             var token = new JwtSecurityToken(
                 issuer: _jwtOptions.Value.Issuer,
                 audience: _jwtOptions.Value.Audience,
@@ -127,8 +125,6 @@ namespace AuthService.Services
 
         private void RemoveRefreshTokenFromCache(string oldToken)
         {
-            _logger.LogInformation("Remove old refresh token from RedisCache");
-
             _cache.Remove(oldToken);
         }
     }

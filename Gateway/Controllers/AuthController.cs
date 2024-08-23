@@ -1,4 +1,5 @@
-﻿using Gateway.Models;
+﻿using Gateway.Abstractions;
+using Gateway.Models;
 using Gateway.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,10 +10,10 @@ namespace Gateway.Controllers
     [Route("auth")]
     public class AuthController : ControllerBase
     {
-        private readonly AuthServiceClient _authService;
+        private readonly IAuthService _authService;
         private readonly ILogger<AuthController> _logger;
 
-        public AuthController(ILogger<AuthController> logger, AuthServiceClient authService)
+        public AuthController(ILogger<AuthController> logger, IAuthService authService)
         {
             _logger = logger;
             _authService = authService;
@@ -23,8 +24,6 @@ namespace Gateway.Controllers
         {
             if (ModelState.IsValid)
             {
-                _logger.LogInformation("Start proccessing SingUp request");
-
                 // TODO Send user data to UserService and get user id
 
                 ulong userId = 1;
@@ -33,8 +32,6 @@ namespace Gateway.Controllers
 
                 AppendCookies("accessToken", response.AccessToken, DateTime.UtcNow.AddDays(3));
                 AppendCookies("refreshToken", response.RefreshToken, DateTime.UtcNow.AddMonths(1));
-
-                _logger.LogInformation("Return response with tokens");
 
                 return Ok(response);
             }
@@ -48,14 +45,6 @@ namespace Gateway.Controllers
                 HttpOnly = true,
                 Expires = expiresTime
             });
-        }
-
-        [HttpGet("user/{id}")]
-        [Authorize]
-        public IActionResult GetUser(int id)
-        {
-            _logger.LogInformation("GET user/{id}", id);
-            return Ok();
         }
     }
 }

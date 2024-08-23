@@ -1,9 +1,9 @@
-﻿using Grpc.Net.Client;
-using System.Numerics;
+﻿using Gateway.Abstractions;
+using Grpc.Net.Client;
 
 namespace Gateway.Services
 {
-    public class AuthServiceClient
+    public class AuthServiceClient : IAuthService
     {
         private readonly ILogger<AuthServiceClient> _logger;
         private readonly IConfiguration _configuration;
@@ -15,10 +15,10 @@ namespace Gateway.Services
             _address = $"http://{configuration["AUTH_HOST"]}:{configuration["AUTH_PORT"]}";
         }
 
-        public async Task<CreateTokensResponse> CreateTokensAsync(ulong userId)   
+        public async Task<CreateTokensResponse> CreateTokensAsync(ulong userId)
         {
             _logger.LogInformation("Method - CreateTokens - {Time} - {Address}", DateTime.Now, _address);
-            
+
             using var channel = GrpcChannel.ForAddress(_address);
             var client = new AuthService.AuthServiceClient(channel);
 

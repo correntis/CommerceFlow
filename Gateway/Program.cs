@@ -1,12 +1,8 @@
 using Gateway;
+using Gateway.Abstractions;
 using Gateway.Extensions;
 using Gateway.Infrastructure;
 using Gateway.Services;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -21,7 +17,7 @@ services.AddLogging(builder => builder.AddConsole());
 
 services.AddGatewayCookieAuthentication(configuration);
 
-services.AddSingleton<AuthServiceClient>();
+services.AddSingleton<IAuthService, AuthServiceClient>();
 
 
 var app = builder.Build();

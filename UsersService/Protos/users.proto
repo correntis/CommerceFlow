@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+option csharp_namespace = "UsersService";
+
+package greet;
+
+service UsersService {
+  rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);
+  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
+  rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse);
+  rpc GetUser (GetUserRequest) returns (GetUserResponse);
+  rpc GetAllUsers (Empty) returns (GetAllUsersResponse);
+}
+
+message CreateUserRequest {
+  string email = 1;
+  string hash_password = 2;
+}
+
+message CreateUserResponse {
+  uint64 id = 1;
+}
+
+message UpdateUserRequest {
+	string id = 1;
+	string name = 2;
+	string email = 3;
+}
+
+message UpdateUserResponse {
+  bool is_success = 1;
+  string error_message = 2; 
+}
+
+message DeleteUserRequest {
+	string id = 1;
+}
+
+message DeleteUserResponse {
+  bool is_success = 1;
+  string error_message = 2; 
+}
+
+message GetUserRequest{
+	string id = 1;
+}
+
+message GetUserResponse{
+	string id = 1;
+	string name = 2;
+	string email = 3;
+}
+
+message Empty { }
+
+message GetAllUsersResponse{
+	repeated GetUserResponse users = 1;
+}
