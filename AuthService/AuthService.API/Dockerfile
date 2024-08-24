@@ -9,17 +9,17 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["UsersService.csproj", "."]
-RUN dotnet restore "./UsersService.csproj"
+COPY ["AuthService.API.csproj", "."]
+RUN dotnet restore "./AuthService.API.csproj"
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "./UsersService.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./AuthService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./UsersService.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./AuthService.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "UsersService.dll"]
+ENTRYPOINT ["dotnet", "AuthService.API.dll"]
