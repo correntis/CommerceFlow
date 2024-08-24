@@ -13,21 +13,17 @@ namespace AuthService.Services
     public class AuthServiceImpl : AuthService.AuthServiceBase
     {
         private readonly ILogger<AuthServiceImpl> _logger;
-        private readonly IConfiguration _configuration;
         private readonly IDistributedCache _cache;
         private readonly IOptions<JwtOptions> _jwtOptions;
 
         public AuthServiceImpl(
             ILogger<AuthServiceImpl> logger, 
-            IConfiguration configuration,
             IDistributedCache cache, 
             IOptions<JwtOptions> jwtOptions)
         {
             _logger = logger;
-            _configuration = configuration;
             _cache = cache;
             _jwtOptions = jwtOptions;
-
         }
 
         public override async Task<CreateTokensResponse> CreateTokens(CreateTokensRequest request, ServerCallContext context)
@@ -64,9 +60,9 @@ namespace AuthService.Services
                 };
             }
 
-            var userId = ulong.Parse(userIdString);
+            await RemoveRefreshTokenFromCacheAsync(request.RefreshToken);
 
-            RemoveRefreshTokenFromCache(request.RefreshToken);
+            var userId = ulong.Parse(userIdString);
             var newAccessToken = IssueAccessToken(userId);
             var newRefreshToken = await IssueRefreshTokenAsync(userId);
             
@@ -81,7 +77,7 @@ namespace AuthService.Services
             return verifyResponse;
         }
 
-        private string IssueAccessToken(ulong userId)
+        public string IssueAccessToken(ulong userId)
         {
             _logger.LogInformation("Issue Access Token");
 
@@ -109,7 +105,7 @@ namespace AuthService.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private async Task<string> IssueRefreshTokenAsync(ulong userId)
+        public async Task<string> IssueRefreshTokenAsync(ulong userId)
         {
             _logger.LogInformation("Issue Refresh Token");
 
@@ -123,9 +119,9 @@ namespace AuthService.Services
             return refreshToken;
         }
 
-        private void RemoveRefreshTokenFromCache(string oldToken)
+        public async Task RemoveRefreshTokenFromCacheAsync(string oldToken)
         {
-            _cache.Remove(oldToken);
+            await _cache.RemoveAsync(oldToken);
         }
     }
 }
