@@ -1,4 +1,6 @@
-using AuthService.Infrascructure;
+using AuthService.Infrastructure.Configuration;
+using AuthService.Infrastructure.Abstractions;
+using AuthService.Infrastructure.Services;
 using AuthService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,8 +9,12 @@ var configuration = builder.Configuration;
 
 services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
 
+
 services.AddGrpc();
 services.AddLogging(builder => { builder.AddConsole(); });
+
+services.AddScoped<ICacheService, CacheService>();
+services.AddScoped<ITokenService, TokenService>();
 
 services.AddStackExchangeRedisCache(options =>
 {

@@ -1,11 +1,12 @@
-using AuthService.Infrascructure;
+using AuthService.Infrastructure.Configuration;
+using AuthService.Infrastructure.Abstractions;
+using AuthService.Infrastructure.Services;
 using AuthService.Services;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Moq;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
@@ -17,6 +18,8 @@ namespace AuthService.Tests
         private readonly AuthServiceImpl _authService;
         private readonly IConfiguration _configuration;
         private readonly IOptions<JwtOptions> _jwtOptions;
+        private readonly ITokenService _tokenService;
+        private readonly ICacheService _cacheService;
         private readonly Mock<IDistributedCache> _mockCache;
         private readonly Mock<ILogger<AuthServiceImpl>> _mockLogger;
 
@@ -35,7 +38,9 @@ namespace AuthService.Tests
 
             _mockCache = new Mock<IDistributedCache>();
             _mockLogger = new Mock<ILogger<AuthServiceImpl>>();
-            _authService = new AuthServiceImpl(_mockLogger.Object, _mockCache.Object, _jwtOptions);
+            _cacheService = new CacheService(_mockCache.Object);
+            _tokenService = new TokenService(_jwtOptions);
+            _authService = new AuthServiceImpl(_mockLogger.Object, _cacheService, _tokenService);
         }
 
         [Fact]
@@ -85,7 +90,7 @@ namespace AuthService.Tests
         {
             var token = Guid.NewGuid().ToString();
 
-            await _authService.RemoveRefreshTokenFromCacheAsync(token);
+            await _authService.RemoveTokenFromCacheAsync(token);
 
             _mockCache.Verify(c => c.RemoveAsync(
                 It.Is<string>(key => key == token),
