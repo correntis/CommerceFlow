@@ -1,13 +1,6 @@
-using AuthService.Infrastructure.Configuration;
 using AuthService.Infrastructure.Abstractions;
 using Grpc.Core;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using AuthService.Infrastructure.Services;
 
 namespace AuthService.Services
 {
