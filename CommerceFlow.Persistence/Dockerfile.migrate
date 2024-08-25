@@ -1,0 +1,18 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+WORKDIR /src
+
+COPY ["UsersService/UsersService.API/UsersService.API.csproj", "UsersService/UsersService.API/"]
+COPY ["CommerceFlow.Persistence/CommerceFlow.Persistence.csproj", "CommerceFlow.Persistence/"]
+
+RUN dotnet restore "UsersService/UsersService.API/UsersService.API.csproj"
+
+RUN dotnet tool install --global dotnet-ef
+
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+COPY . .
+
+WORKDIR "/src/UsersService/UsersService.API"
+
+ENTRYPOINT ["dotnet", "ef", "database", "update", "-p", "/src/CommerceFlow.Persistence/CommerceFlow.Persistence.csproj"]
