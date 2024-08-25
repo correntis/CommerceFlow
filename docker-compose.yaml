@@ -12,8 +12,8 @@ services:
   auth-service:
     container_name: auth-service
     build:
-      context: ./AuthService/AuthService.API
-      dockerfile: Dockerfile
+      context: ./AuthService
+      dockerfile: AuthService.API/Dockerfile
     environment:
       - STORAGE_HOST=redis-tokens
       - STORAGE_PORT=6379
@@ -35,10 +35,39 @@ services:
       - AUTH_PORT=8080
     depends_on:
       - auth-service
+      - users-service
     ports:
       - "5000:8080"
     networks:
       - commerceflow
+
+  users-service:
+    container_name: users-service
+    build:
+      context: ./
+      dockerfile: ./UsersService/UsersService.API/Dockerfile
+    environment:
+      POSTGRES_DB: "commercedb"
+      POSTGRES_USER: "postgres"
+      POSTGRES_HOST: "commerce-storage"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_PORT: "5432"
+    depends_on:
+      - commerce-storage
+    ports:
+      - "5002:8080"
+    networks:
+      - commerceflow
+
+  commerce-storage:
+    container_name: commerce-storage
+    image: postgres:17beta2-alpine3.20
+    environment:
+      POSTGRES_DB: "commercedb"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "password"
+    ports:
+      - "5432:5432"
 
 networks:
   commerceflow:
