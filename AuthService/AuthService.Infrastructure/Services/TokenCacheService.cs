@@ -3,11 +3,11 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace AuthService.Infrastructure.Services
 {
-    public class CacheService : ICacheService
+    public class TokenCacheService : ITokenCacheService
     {
         private readonly IDistributedCache _cache;
 
-        public CacheService(IDistributedCache cache)
+        public TokenCacheService(IDistributedCache cache)
         {
             _cache = cache;
         }

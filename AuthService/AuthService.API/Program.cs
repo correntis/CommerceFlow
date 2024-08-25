@@ -13,7 +13,7 @@ services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
 services.AddGrpc();
 services.AddLogging(builder => { builder.AddConsole(); });
 
-services.AddScoped<ICacheService, CacheService>();
+services.AddScoped<ITokenCacheService, TokenCacheService>();
 services.AddScoped<ITokenService, TokenService>();
 
 services.AddStackExchangeRedisCache(options =>

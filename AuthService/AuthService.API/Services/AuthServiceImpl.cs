@@ -14,12 +14,12 @@ namespace AuthService.Services
     public class AuthServiceImpl : AuthService.AuthServiceBase
     {
         private readonly ILogger<AuthServiceImpl> _logger;
-        private readonly ICacheService _cacheService;
+        private readonly ITokenCacheService _cacheService;
         private readonly ITokenService _tokenService;
 
         public AuthServiceImpl(
             ILogger<AuthServiceImpl> logger,
-            ICacheService cacheService,
+            ITokenCacheService cacheService,
             ITokenService tokenService)
         {
             _logger = logger;

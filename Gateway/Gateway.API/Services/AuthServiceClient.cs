@@ -6,12 +6,12 @@ namespace Gateway.Services
     public class AuthServiceClient : IAuthService
     {
         private readonly ILogger<AuthServiceClient> _logger;
-        private readonly IConfiguration _configuration;
         private readonly string _address;
-        public AuthServiceClient(ILogger<AuthServiceClient> logger, IConfiguration configuration)
+        public AuthServiceClient(
+            ILogger<AuthServiceClient> logger, 
+            IConfiguration configuration)
         {
             _logger = logger;
-            _configuration = configuration;
             _address = $"http://{configuration["AUTH_HOST"]}:{configuration["AUTH_PORT"]}";
         }
 

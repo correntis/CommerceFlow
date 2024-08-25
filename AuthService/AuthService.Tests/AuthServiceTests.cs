@@ -19,7 +19,7 @@ namespace AuthService.Tests
         private readonly IConfiguration _configuration;
         private readonly IOptions<JwtOptions> _jwtOptions;
         private readonly ITokenService _tokenService;
-        private readonly ICacheService _cacheService;
+        private readonly ITokenCacheService _cacheService;
         private readonly Mock<IDistributedCache> _mockCache;
         private readonly Mock<ILogger<AuthServiceImpl>> _mockLogger;
 
@@ -38,7 +38,7 @@ namespace AuthService.Tests
 
             _mockCache = new Mock<IDistributedCache>();
             _mockLogger = new Mock<ILogger<AuthServiceImpl>>();
-            _cacheService = new CacheService(_mockCache.Object);
+            _cacheService = new TokenCacheService(_mockCache.Object);
             _tokenService = new TokenService(_jwtOptions);
             _authService = new AuthServiceImpl(_mockLogger.Object, _cacheService, _tokenService);
         }
