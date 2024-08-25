@@ -1,13 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CommerceFlow.Persistence.Configuration;
+using CommerceFlow.Persistence.Entities;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography.X509Certificates;
 
 namespace CommerceFlow.Persistence
 {
-    public class CommerceDbContext : DbContext
+    public class CommerceDbContext(DbContextOptions<CommerceDbContext> options) : DbContext(options)
     {
-        public CommerceDbContext(DbContextOptions<CommerceDbContext> options)
-            : base(options)
+        public DbSet<UserEntity> Users { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
