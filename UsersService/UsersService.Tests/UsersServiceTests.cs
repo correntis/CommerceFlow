@@ -133,24 +133,27 @@ namespace UsersService.Tests
             var getResponse = await _usersService.Get(getRequest, null);
 
             Assert.NotNull(getResponse);
-            Assert.False(getResponse.IsSuccess);
+            Assert.Empty(getResponse.Name);
+            Assert.Empty(getResponse.Email);
         }
 
         [Fact]
         public async Task GetAllUsers_ShouldReturnAllUsers()
         {
             var amount = 3;
+            var usersId = new List<ulong>();
+
             for (var i = 0; i < amount; i++)
             {
-                await CreateUserInMemory();
+                var createResponse =  await CreateUserInMemory();
+                usersId.Add(createResponse.Id);
             }
 
             var response = await _usersService.GetAll(new Empty(), null);
 
             Assert.NotNull(response);
             Assert.Equal(amount, response.Users.Count);
-            Assert.True(response.Users.All(userResponse => userResponse.IsSuccess));
-            Assert.True(response.IsSuccess);
+            Assert.Contains(usersId, id => response.Users.Any(user => user.Id == id));
         }
 
         private async Task<CreateUserResponse> CreateUserInMemory()

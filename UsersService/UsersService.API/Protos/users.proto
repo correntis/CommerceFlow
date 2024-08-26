@@ -49,12 +49,10 @@ message UserResponse{
   uint64 id = 1;
   string name = 2;
   string email = 3;
-  bool is_success = 4;
 }
 
 message Empty { }
 
 message UsersResponse{
 	repeated UserResponse users = 1;
-	bool is_success = 4;
 }

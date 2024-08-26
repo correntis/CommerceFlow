@@ -57,23 +57,30 @@ namespace UsersService.Services
         {
             var user = await _usersRepository.GetAsync(request.Id);
 
+            if (user is null)
+            {
+                return new();
+            }
+
             return new() { Email = user.Email, Name = user.Name, Id = user.Id };
         }
 
         public override async Task<UsersResponse> GetAll(Empty request, ServerCallContext context)   
         {
             var users = await _usersRepository.GetAllAsync();
-
             var response = new UsersResponse();
+
+            if (users is null)
+            {
+                return response;
+            }
 
             response.Users.AddRange(users.Select(user => new UserResponse
             {
                 Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
-                IsSuccess = true
             }));
-            response.IsSuccess = true;
 
             return response;
         }
