@@ -7,7 +7,7 @@ namespace CommerceFlow.Persistence
 {
     public class CommerceDbContext(DbContextOptions<CommerceDbContext> options) : DbContext(options)
     {
-        public DbSet<UserEntity> Users { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

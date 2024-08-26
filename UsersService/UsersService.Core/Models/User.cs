@@ -3,10 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CommerceFlow.Persistence.Entities
 {
-    public class UserEntity
+    public class User
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public ulong Id { get; set; }
 
         public string Name { get; set; } = string.Empty;

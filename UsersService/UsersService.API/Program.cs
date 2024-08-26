@@ -1,6 +1,8 @@
 using UsersService.Services;
 using Microsoft.EntityFrameworkCore;
 using CommerceFlow.Persistence;
+using CommerceFlow.Persistence.Repositories;
+using CommerceFlow.Persistence.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -17,6 +19,8 @@ services.AddDbContext<CommerceDbContext>(options =>
         $"Database={configuration["POSTGRES_DB"]}"
     );       
 });
+
+services.AddScoped<IUsersRepository, UsersRepository>();
 
 var app = builder.Build();
 
