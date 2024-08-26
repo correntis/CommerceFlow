@@ -5,9 +5,7 @@ namespace CommerceFlow.Persistence.Entities
 {
     public class User
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public ulong Id { get; set; }
+        public int Id { get; set; }
 
         public string Name { get; set; } = string.Empty;
 

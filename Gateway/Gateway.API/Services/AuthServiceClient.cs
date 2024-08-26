@@ -6,20 +6,20 @@ namespace Gateway.Services
     public class AuthServiceClient : IAuthService
     {
         private readonly ILogger<AuthServiceClient> _logger;
-        private readonly string _address;
+        private readonly string address;
         public AuthServiceClient(
             ILogger<AuthServiceClient> logger, 
             IConfiguration configuration)
         {
             _logger = logger;
-            _address = $"http://{configuration["AUTH_HOST"]}:{configuration["AUTH_PORT"]}";
+            address = $"http://{configuration["AUTH_HOST"]}:{configuration["AUTH_PORT"]}";
         }
 
-        public async Task<CreateTokensResponse> CreateTokensAsync(ulong userId)
+        public async Task<CreateTokensResponse> CreateTokensAsync(int userId)
         {
-            _logger.LogInformation("Method - CreateTokens - {Time} - {Address}", DateTime.Now, _address);
+            _logger.LogInformation("Method - CreateTokens - {Time} - {Address}", DateTime.Now, address);
 
-            using var channel = GrpcChannel.ForAddress(_address);
+            using var channel = GrpcChannel.ForAddress(address);
             var client = new AuthService.AuthServiceClient(channel);
 
             var request = new CreateTokensRequest
@@ -36,7 +36,7 @@ namespace Gateway.Services
         {
             _logger.LogInformation("Method - Verify - {Time}", DateTime.Now);
 
-            using var channel = GrpcChannel.ForAddress(_address);
+            using var channel = GrpcChannel.ForAddress(address);
             var client = new AuthService.AuthServiceClient(channel);
 
             var request = new VerifyRequest

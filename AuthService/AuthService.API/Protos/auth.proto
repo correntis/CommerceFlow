@@ -10,7 +10,7 @@ service AuthService {
 }
 
 message CreateTokensRequest{
-	uint64 user_id = 1;
+	int32 user_id = 1;
 }
 
 message CreateTokensResponse{
@@ -24,7 +24,7 @@ message VerifyRequest{
 
 message VerifyResponse{
 	bool is_valid = 1;
-	uint64 user_id = 2;
+	int32 user_id = 2;
 	string access_token = 3;
 	string refresh_token = 4;
 }

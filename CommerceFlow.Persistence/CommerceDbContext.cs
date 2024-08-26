@@ -13,6 +13,8 @@ namespace CommerceFlow.Persistence
         {
             modelBuilder.ApplyConfiguration(new UserConfiguration());
 
+            modelBuilder.UseIdentityByDefaultColumns();
+
             base.OnModelCreating(modelBuilder);
         }
     }

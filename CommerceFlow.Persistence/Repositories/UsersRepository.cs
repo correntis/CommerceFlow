@@ -20,7 +20,7 @@ namespace CommerceFlow.Persistence.Repositories
         }
 
 
-        public async Task<ulong> AddAsync(User user)
+        public async Task<int> AddAsync(User user)
         {
             var entity = new User
             {
@@ -52,7 +52,7 @@ namespace CommerceFlow.Persistence.Repositories
 
             return rowsAffected;
         }
-        public async Task<int> DeleteAsync(ulong id)
+        public async Task<int> DeleteAsync(int id)
         {
             var entity = await _context.Users.FindAsync(id);
 
@@ -68,7 +68,7 @@ namespace CommerceFlow.Persistence.Repositories
             return rowsAffected;
         }
 
-        public async Task<User> GetAsync(ulong id)
+        public async Task<User> GetAsync(int id)
         {
             var entity = await _context.Users.FindAsync(id);
 

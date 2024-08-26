@@ -1,8 +1,9 @@
 syntax = "proto3";
 
-option csharp_namespace = "UsersService";
+option csharp_namespace = "Gateway";
 
 package greet;
+
 
 service UsersService {
   rpc Create (CreateUserRequest) returns (CreateUserResponse);

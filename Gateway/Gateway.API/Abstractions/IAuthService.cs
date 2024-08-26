@@ -2,7 +2,7 @@
 {
     public interface IAuthService
     {
-        Task<CreateTokensResponse> CreateTokensAsync(ulong userId);
+        Task<CreateTokensResponse> CreateTokensAsync(int userId);
         Task<VerifyResponse> VerifyAsync(string refreshToken);
     }
 }

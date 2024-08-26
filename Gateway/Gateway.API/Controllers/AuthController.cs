@@ -13,7 +13,9 @@ namespace Gateway.Controllers
         private readonly IAuthService _authService;
         private readonly ILogger<AuthController> _logger;
 
-        public AuthController(ILogger<AuthController> logger, IAuthService authService)
+        public AuthController(
+            ILogger<AuthController> logger, 
+            IAuthService authService)
         {
             _logger = logger;
             _authService = authService;
@@ -26,7 +28,7 @@ namespace Gateway.Controllers
             {
                 // TODO Send user data to UserService and get user id
 
-                ulong userId = 1;
+                int userId = 1;
 
                 var response = await _authService.CreateTokensAsync(userId);
 

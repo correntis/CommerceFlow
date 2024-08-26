@@ -4,8 +4,8 @@ namespace Gateway.Models
 {
     public class LoginModel
     {
-        [Required(ErrorMessage = "Username is required.")]
-        [StringLength(100, ErrorMessage = "Username must be less than 100 characters.")]
+        [Required(ErrorMessage = "UserName is required.")]
+        [StringLength(100, ErrorMessage = "UserName must be less than 100 characters.")]
         public string Username { get; set; }
 
         [Required(ErrorMessage = "Password is required.")]

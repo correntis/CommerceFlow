@@ -12,12 +12,14 @@ namespace AuthService.Infrastructure.Services
     public class TokenService : ITokenService
     {
         private readonly IOptions<JwtOptions> _jwtOptions;
-        public TokenService(IOptions<JwtOptions> jwtOptions)
+        public TokenService(
+            IOptions<JwtOptions> jwtOptions
+            )
         {
             _jwtOptions = jwtOptions;
         }
 
-        public string CreateAccessToken(ulong userId)
+        public string CreateAccessToken(int userId)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Value.Key));
 

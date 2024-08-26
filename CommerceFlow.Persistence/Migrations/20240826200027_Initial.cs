@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -14,7 +15,8 @@ namespace CommerceFlow.Persistence.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
                     HashPassword = table.Column<string>(type: "text", nullable: false)

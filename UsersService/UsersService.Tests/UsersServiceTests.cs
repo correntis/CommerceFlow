@@ -64,7 +64,7 @@ namespace UsersService.Tests
         {
             var updateRequest = new UpdateUserRequest()
             {
-                Id = ulong.MaxValue,
+                Id = int.MaxValue,
                 Name = "Doe Jane",
                 Email = "doejogn8@gmail.com",
                 HashPassword = "updated"
@@ -97,7 +97,7 @@ namespace UsersService.Tests
         {
             var deleteRequest = new DeleteUserRequest()
             {
-                Id = ulong.MaxValue,
+                Id = int.MaxValue,
             };
 
             var deleteResponse = await _usersService.Delete(deleteRequest, null);
@@ -127,7 +127,7 @@ namespace UsersService.Tests
         {
             var getRequest = new GetUserRequest()
             {
-                Id = ulong.MaxValue
+                Id = int.MaxValue
             };
 
             var getResponse = await _usersService.Get(getRequest, null);
@@ -141,7 +141,7 @@ namespace UsersService.Tests
         public async Task GetAllUsers_ShouldReturnAllUsers()
         {
             var amount = 3;
-            var usersId = new List<ulong>();
+            var usersId = new List<int>();
 
             for (var i = 0; i < amount; i++)
             {

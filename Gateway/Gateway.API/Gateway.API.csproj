@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>858a241c-4d20-4e4a-a889-e3fe808e5728</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -11,6 +10,7 @@
 
 	<ItemGroup>
 		<Protobuf Include="Protos/auth.proto" GrpcServices="Client" />
+		<Protobuf Include="Protos/users.proto" GrpcServices="Client" />
 		<PackageReference Include="Google.Protobuf" Version="3.27.3" />
 		<PackageReference Include="Grpc.Net.Client" Version="2.65.0" />
 		<PackageReference Include="Grpc.Tools" Version="2.54.0" PrivateAssets="All">

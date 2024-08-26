@@ -56,7 +56,7 @@ namespace AuthService.Services
 
             await RemoveTokenFromCacheAsync(request.RefreshToken);
 
-            var userId = ulong.Parse(userIdString);
+            var userId = int.Parse(userIdString);
             var newAccessToken = IssueAccessToken(userId);
             var newRefreshToken = await IssueRefreshTokenAsync(userId);
             
@@ -71,12 +71,12 @@ namespace AuthService.Services
             return verifyResponse;
         }
 
-        public string IssueAccessToken(ulong userId)
+        public string IssueAccessToken(int userId)
         {
             return _tokenService.CreateAccessToken(userId);
         }
 
-        public async Task<string> IssueRefreshTokenAsync(ulong userId)
+        public async Task<string> IssueRefreshTokenAsync(int userId)
         {
             _logger.LogInformation("Issue Refresh Token");
 

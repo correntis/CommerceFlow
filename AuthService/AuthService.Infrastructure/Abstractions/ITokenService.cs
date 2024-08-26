@@ -2,7 +2,7 @@
 {
     public interface ITokenService
     {
-        string CreateAccessToken(ulong userId);
+        string CreateAccessToken(int userId);
         string CreateRefreshToken();
     }
 }

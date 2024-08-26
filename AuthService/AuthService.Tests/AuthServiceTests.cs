@@ -46,7 +46,7 @@ namespace AuthService.Tests
         [Fact]
         public void IssueAccessToken_ShouldReturnValidToken()
         {
-            var userId = 123ul;
+            var userId = 123;
 
             var token = _authService.IssueAccessToken(userId);
             var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
@@ -61,7 +61,7 @@ namespace AuthService.Tests
         [Fact]
         public async void IssueRefreshToken_ShouldReturnRerfreshToken()
         {
-            var userId = 123ul;
+            var userId = 123;
 
             var token = await _authService.IssueRefreshTokenAsync(userId);
 
@@ -71,7 +71,7 @@ namespace AuthService.Tests
         [Fact]
         public async void IssueRefreshToken_ShouldSaveTokenToCache()
         {
-            var userId = 123ul;
+            var userId = 123;
 
             var token = await _authService.IssueRefreshTokenAsync(userId);
 
