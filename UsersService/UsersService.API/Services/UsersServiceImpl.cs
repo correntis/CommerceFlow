@@ -1,6 +1,6 @@
 using CommerceFlow.Persistence.Abstractions;
+using CommerceFlow.Persistence.Entities;
 using Grpc.Core;
-using UsersService;
 
 namespace UsersService.Services
 {
@@ -17,30 +17,65 @@ namespace UsersService.Services
             _usersRepository = usersRepository;
         }
 
-        public override Task<CreateUserResponse> CreateUser(CreateUserRequest request, ServerCallContext context)
+        public override async Task<CreateUserResponse> Create(CreateUserRequest request, ServerCallContext context)
         {
-            return base.CreateUser(request, context);
+            var user = new User
+            {
+                Name = request.Name,
+                Email = request.Email,
+                HashPassword = request.HashPassword
+            };
+
+            var id = await _usersRepository.AddAsync(user);
+
+            return new() { Id = id };
         }
 
-        public override Task<DeleteUserResponse> DeleteUser(DeleteUserRequest request, ServerCallContext context)
+        public override async Task<DeleteUserResponse> Delete(DeleteUserRequest request, ServerCallContext context)
         {
-            return base.DeleteUser(request, context);
+            var rowsAffected = await _usersRepository.DeleteAsync(request.Id);
+
+            return new() { IsSuccess = Convert.ToBoolean(rowsAffected) };
         }
 
-        public override Task<UpdateUserResponse> UpdateUser(UpdateUserRequest request, ServerCallContext context)
+        public override async Task<UpdateUserResponse> Update(UpdateUserRequest request, ServerCallContext context)
         {
-            return base.UpdateUser(request, context);
+            var user = new User
+            {
+                Id = request.Id,
+                Name = request.Name,
+                Email = request.Email,
+                HashPassword = request.HashPassword
+            };
+
+            var rowsAffected = await _usersRepository.UpdateAsync(user);
+
+            return new() { IsSuccess = Convert.ToBoolean(rowsAffected) };
         }
 
-        public override Task<UserResponse> GetUser(GetUserRequest request, ServerCallContext context)
+        public override async Task<UserResponse> Get(GetUserRequest request, ServerCallContext context)
         {
-            return base.GetUser(request, context);
+            var user = await _usersRepository.GetAsync(request.Id);
+
+            return new() { Email = user.Email, Name = user.Name, Id = user.Id };
         }
 
-        public override Task<UsersResponse> GetAllUsers(Empty request, ServerCallContext context)   
+        public override async Task<UsersResponse> GetAll(Empty request, ServerCallContext context)   
         {
-            return base.GetAllUsers(request, context);   
-        }
+            var users = await _usersRepository.GetAllAsync();
 
+            var response = new UsersResponse();
+
+            response.Users.AddRange(users.Select(user => new UserResponse
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                IsSuccess = true
+            }));
+            response.IsSuccess = true;
+
+            return response;
+        }
     }
 }

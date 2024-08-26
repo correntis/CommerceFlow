@@ -5,16 +5,17 @@ option csharp_namespace = "UsersService";
 package greet;
 
 service UsersService {
-  rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);
-  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
-  rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse);
-  rpc GetUser (GetUserRequest) returns (UserResponse);
-  rpc GetAllUsers (Empty) returns (UsersResponse);
+  rpc Create (CreateUserRequest) returns (CreateUserResponse);
+  rpc Update (UpdateUserRequest) returns (UpdateUserResponse);
+  rpc Delete (DeleteUserRequest) returns (DeleteUserResponse);
+  rpc Get (GetUserRequest) returns (UserResponse);
+  rpc GetAll (Empty) returns (UsersResponse);
 }
 
 message CreateUserRequest {
-  string email = 1;
-  string hash_password = 2;
+  string name = 1;
+  string email = 2;
+  string hash_password = 3;
 }
 
 message CreateUserResponse {
@@ -22,37 +23,38 @@ message CreateUserResponse {
 }
 
 message UpdateUserRequest {
-  string id = 1;
+  uint64 id = 1;
   string name = 2;
   string email = 3;
+  string hash_password = 4;
 }
 
 message UpdateUserResponse {
   bool is_success = 1;
-  string error_message = 2; 
 }
 
 message DeleteUserRequest {
-	string id = 1;
+  uint64 id = 1;
 }
 
 message DeleteUserResponse {
   bool is_success = 1;
-  string error_message = 2; 
 }
 
 message GetUserRequest{
-	string id = 1;
+  uint64 id = 1;
 }
 
 message UserResponse{
-	string id = 1;
-	string name = 2;
-	string email = 3;
+  uint64 id = 1;
+  string name = 2;
+  string email = 3;
+  bool is_success = 4;
 }
 
 message Empty { }
 
 message UsersResponse{
 	repeated UserResponse users = 1;
+	bool is_success = 4;
 }

@@ -1,5 +1,6 @@
 ﻿using CommerceFlow.Persistence.Abstractions;
 using CommerceFlow.Persistence.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CommerceFlow.Persistence.Repositories
@@ -9,6 +10,7 @@ namespace CommerceFlow.Persistence.Repositories
         private readonly ILogger<UsersRepository> _logger;
         private readonly CommerceDbContext _context;
 
+
         public UsersRepository(
             ILogger<UsersRepository> logger,
             CommerceDbContext context)
@@ -17,28 +19,77 @@ namespace CommerceFlow.Persistence.Repositories
             _context = context;
         }
 
-        public ulong Add(User user)
+
+        public async Task<ulong> AddAsync(User user)
         {
-            return 1;
+            var entity = new User
+            {
+                Name = user.Name,
+                Email = user.Email,
+                HashPassword = user.HashPassword
+            };
+
+            await _context.Users.AddAsync(entity);
+            await _context.SaveChangesAsync();
+
+            return entity.Id;
         }
 
-        public void Update(User user)
+        public async Task<int> UpdateAsync(User user)
         {
+            var entity = await _context.Users.FindAsync(user.Id);
 
+            if (entity is null)
+            {
+                return 0;
+            }
+
+            entity.Name = user.Name;
+            entity.Email = user.Email;
+            entity.HashPassword = user.HashPassword;
+
+            var rowsAffected = await _context.SaveChangesAsync();
+
+            return rowsAffected;
         }
-        public void Delete(ulong id)
+        public async Task<int> DeleteAsync(ulong id)
         {
+            var entity = await _context.Users.FindAsync(id);
 
+            if (entity is null)
+            {
+                return 0;
+            }
+
+            _context.Users.Remove(entity);
+
+            var rowsAffected = await _context.SaveChangesAsync();
+
+            return rowsAffected;
         }
 
-        public User Get(ulong id)
+        public async Task<User> GetAsync(ulong id)
         {
-            return new User();
+            var entity = await _context.Users.FindAsync(id);
+
+            if (entity is null)
+            {
+                return new();
+            }
+
+            return entity;
         }
 
-        public List<User> GetAll()
+        public async Task<List<User>> GetAllAsync()
         {
-            return [];
+            var entities = await _context.Users.ToListAsync();
+
+            if (entities is null)
+            {
+                return [];
+            }
+
+            return entities;
         }
     }
 }

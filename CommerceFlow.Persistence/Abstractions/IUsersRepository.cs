@@ -4,10 +4,10 @@ namespace CommerceFlow.Persistence.Abstractions
 {
     public interface IUsersRepository
     {
-        ulong Add(User user);
-        void Delete(ulong id);
-        User Get(ulong id);
-        List<User> GetAll();
-        void Update(User user);
+        Task<ulong> AddAsync(User user);
+        Task<int> DeleteAsync(ulong id);
+        Task<List<User>> GetAllAsync();
+        Task<User> GetAsync(ulong id);
+        Task<int> UpdateAsync(User user);
     }
 }
