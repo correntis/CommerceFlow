@@ -9,5 +9,7 @@ namespace CommerceFlow.Persistence.Abstractions
         Task<List<User>> GetAllAsync();
         Task<User> GetAsync(int id);
         Task<int> UpdateAsync(User user);
+
+        Task<User> GetByEmailAsync(string email);
     }
 }

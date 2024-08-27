@@ -81,5 +81,12 @@ namespace CommerceFlow.Persistence.Repositories
 
             return entities;
         }
+
+        public async Task<User> GetByEmailAsync(string email)
+        {
+            var entity = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
+
+            return entity;
+        }
     }
 }

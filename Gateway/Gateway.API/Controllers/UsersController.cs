@@ -30,7 +30,7 @@ namespace Gateway.Controllers
             {
                 Name = userModel.Name,
                 Email = userModel.Email,
-                HashPassword = userModel.Password
+                Password = userModel.Password
             };
 
             var result = await _usersService.CreateAsync(User);
@@ -51,7 +51,7 @@ namespace Gateway.Controllers
                 Id = id,
                 Name = userModel.Name,
                 Email = userModel.Email,
-                HashPassword = userModel.Password
+                Password = userModel.Password
             };
 
             var result = await _usersService.UpdateAsync(User);

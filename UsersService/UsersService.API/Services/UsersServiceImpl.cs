@@ -1,6 +1,7 @@
 using CommerceFlow.Persistence.Abstractions;
 using CommerceFlow.Persistence.Entities;
 using Grpc.Core;
+using UsersService.API.Abstractions;
 
 namespace UsersService.Services
 {
@@ -8,22 +9,65 @@ namespace UsersService.Services
     {
         private readonly ILogger<UsersServiceImpl> _logger;
         private readonly IUsersRepository _usersRepository;
+        private readonly IPasswordHasher _passwordHasher;
 
         public UsersServiceImpl(
             ILogger<UsersServiceImpl> logger,
-            IUsersRepository usersRepository)
+            IUsersRepository usersRepository,
+            IPasswordHasher passwordHasher)
         {
             _logger = logger;
             _usersRepository = usersRepository;
+            _passwordHasher = passwordHasher;
+        }
+
+        public async override Task<AuthenticateResponse> Authenticate(AuthenticateRequest request, ServerCallContext context)
+        {
+            var user = await _usersRepository.GetByEmailAsync(request.Email);
+
+            if (user is null)
+            {
+                return new AuthenticateResponse()
+                {
+                    Error = new() { Code = StatusCodes.Status404NotFound, Message = "User Not Found" }
+                };
+            }
+
+            if (!_passwordHasher.Verify(request.Password, user.HashPassword))
+            {
+                return new AuthenticateResponse()
+                {
+                    Error = new() { Code = StatusCodes.Status401Unauthorized, Message = "Unauthorized" }
+                };
+            }
+
+            return new AuthenticateResponse() 
+            {
+                User = new() 
+                { 
+                    Id = user.Id, Name = user.Name, Email = user.Email 
+                }
+            };
         }
 
         public override async Task<CreateUserResponse> Create(CreateUserRequest request, ServerCallContext context)
         {
+            if (await _usersRepository.GetByEmailAsync(request.Email) != null)
+            {
+                return new CreateUserResponse()
+                {
+                    Error = new()
+                    {
+                        Code = StatusCodes.Status409Conflict, Message = "User Already Exists"
+                    }
+                };
+            }
+
             var user = new User
             {
                 Name = request.Name,
                 Email = request.Email,
-                HashPassword = request.HashPassword
+                HashPassword = _passwordHasher.Hash(request.Password)
             };
 
             var id = await _usersRepository.AddAsync(user);
@@ -64,7 +108,7 @@ namespace UsersService.Services
                 Id = request.Id,
                 Name = request.Name,
                 Email = request.Email,
-                HashPassword = request.HashPassword
+                HashPassword = _passwordHasher.Hash(request.Password)
             };
 
             var rowsAffected = await _usersRepository.UpdateAsync(user);
@@ -102,7 +146,7 @@ namespace UsersService.Services
                 }
             };
         }
-
+        
         public override async Task<UsersResponse> GetAll(Empty request, ServerCallContext context)   
         {
             var users = await _usersRepository.GetAllAsync();

@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using CommerceFlow.Persistence;
 using CommerceFlow.Persistence.Repositories;
 using CommerceFlow.Persistence.Abstractions;
+using UsersService.API.Abstractions;
+using UsersService.API.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -21,6 +23,7 @@ services.AddDbContext<CommerceDbContext>(options =>
 });
 
 services.AddScoped<IUsersRepository, UsersRepository>();
+services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 var app = builder.Build();
 

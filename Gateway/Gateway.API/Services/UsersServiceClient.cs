@@ -17,6 +17,34 @@ namespace Gateway.API.Services
             address = $"http://{configuration["USERS_HOST"]}:{configuration["USERS_PORT"]}";
         }
 
+        public async Task<Result<User, Error>> Authenticate(string email, string password)
+        {
+            using var channel = GrpcChannel.ForAddress(address);
+            var usersService = new UsersService.UsersServiceClient(channel);
+
+            var request = new AuthenticateRequest()
+            {
+                Email = email,
+                Password = password
+            };
+
+            var response = await usersService.AuthenticateAsync(request);
+
+            if (response.ResponseCase == AuthenticateResponse.ResponseOneofCase.Error)
+            {
+                return response.Error;
+            }
+
+            var user = new User()
+            {
+                Id = response.User.Id,
+                Name = response.User.Name,
+                Email = response.User.Email
+            };
+
+            return user;
+        }
+
         public async Task<Result<int, Error>> CreateAsync(User user)
         {
 
@@ -27,7 +55,7 @@ namespace Gateway.API.Services
             {
                 Email = user.Email,
                 Name = user.Name,
-                HashPassword = user.HashPassword
+                Password = user.Password
             };
 
             var response = await usersService.CreateAsync(request);
@@ -50,7 +78,7 @@ namespace Gateway.API.Services
                 Id = user.Id,
                 Email = user.Email,
                 Name = user.Name,
-                HashPassword = user.HashPassword
+                Password = user.Password
             };
 
             var response = await usersService.UpdateAsync(request);

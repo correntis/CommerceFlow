@@ -1,4 +1,5 @@
 ﻿using Gateway.Abstractions;
+using Gateway.API.Services;
 using Gateway.Models;
 using Gateway.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -11,42 +12,86 @@ namespace Gateway.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly UsersServiceClient _usersService;
         private readonly ILogger<AuthController> _logger;
 
         public AuthController(
             ILogger<AuthController> logger, 
-            IAuthService authService)
+            IAuthService authService,
+            UsersServiceClient _usersService)
         {
             _logger = logger;
             _authService = authService;
+            this._usersService = _usersService;
         }
 
-        [HttpPost("signup")]
-        public async Task<IActionResult> SignUp( [FromBody] SignUpModel signUpModel )
+        [HttpPost("register")]
+        public async Task<IActionResult> Register( [FromBody] RegisterModel registerModel)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest("Invalid Request Body.");
             }
 
-            // TODO Send user data to UserService and get user id
+            var user = new User
+            {
+                Name = registerModel.Name,
+                Email = registerModel.Email,
+                Password = registerModel.Password
+            };
 
-            int userId = 1;
+            var result = await _usersService.CreateAsync(user);
+
+            if (result.IsError)
+            {
+                return StatusCode(result.Error.Code, result.Error.Message);
+            }
+
+            int userId = result.Value;
 
             var response = await _authService.CreateTokensAsync(userId);
 
-            AppendCookies("accessToken", response.AccessToken, DateTime.UtcNow.AddDays(3));
-            AppendCookies("refreshToken", response.RefreshToken, DateTime.UtcNow.AddMonths(1));
+            AppendCookies(response);
 
             return Ok(response);
         }
 
-        private void AppendCookies(string key, string value, DateTimeOffset expiresTime)
+        [HttpPost("login")]
+        public async Task<IActionResult> Login( [FromBody] LoginModel loginModel)
         {
-            HttpContext.Response.Cookies.Append(key, value, new CookieOptions()
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid Request Body.");
+            }
+
+            var result = await _usersService.Authenticate(loginModel.Email, loginModel.Password);
+
+            if (result.IsError)
+            {
+                return StatusCode(result.Error.Code, result.Error.Message);
+            }
+
+            var user = result.Value;
+
+            var response = await _authService.CreateTokensAsync(user.Id);
+
+            AppendCookies(response);
+
+            return Ok(user);
+        }
+
+        private void AppendCookies(CreateTokensResponse response)
+        {
+            HttpContext.Response.Cookies.Append("accessToken", response.AccessToken, new CookieOptions()
             { 
                 HttpOnly = true,
-                Expires = expiresTime
+                Expires = DateTime.UtcNow.AddMonths(1)
+            });
+            HttpContext.Response.Cookies.Append("refreshToken", response.RefreshToken, new CookieOptions()
+            {
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddMonths(1)
             });
         }
     }

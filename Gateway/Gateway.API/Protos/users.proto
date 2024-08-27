@@ -6,6 +6,7 @@ package greet;
 
 
 service UsersService {
+  rpc Authenticate (AuthenticateRequest) returns (AuthenticateResponse);
   rpc Create (CreateUserRequest) returns (CreateUserResponse);
   rpc Update (UpdateUserRequest) returns (UpdateUserResponse);
   rpc Delete (DeleteUserRequest) returns (DeleteUserResponse);
@@ -24,10 +25,22 @@ message UserResponse{
   string email = 3;
 }
 
+message AuthenticateRequest{
+	string email = 1;
+	string password = 2;
+}
+
+message AuthenticateResponse{
+	oneof response {
+		UserResponse user = 1;
+		Error error = 2;
+	}
+}
+
 message CreateUserRequest {
   string name = 1;
   string email = 2;
-  string hash_password = 3;
+  string password = 3;
 }
 
 message CreateUserResponse {
@@ -41,7 +54,7 @@ message UpdateUserRequest {
   int32 id = 1;
   string name = 2;
   string email = 3;
-  string hash_password = 4;
+  string password = 4;
 }
 
 message UpdateUserResponse {

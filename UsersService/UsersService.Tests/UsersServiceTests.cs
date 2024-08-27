@@ -4,6 +4,8 @@ using CommerceFlow.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
+using UsersService.API.Abstractions;
+using UsersService.API.Infrastructure;
 using UsersService.Services;
 
 namespace UsersService.Tests
@@ -13,6 +15,7 @@ namespace UsersService.Tests
         private readonly UsersServiceImpl _usersService;
         private readonly CommerceDbContext _context;
         private readonly IUsersRepository _usersRepository;
+        private readonly IPasswordHasher _passwordHasher;
         private readonly Mock<ILogger<UsersServiceImpl>> _loggerUsersService;
         private readonly Mock<ILogger<UsersRepository>> _loggerUsersRepository;
 
@@ -25,9 +28,10 @@ namespace UsersService.Tests
                 .UseInMemoryDatabase("UsersServiceTestsDb");
 
             _context = new CommerceDbContext(optionsBuilder.Options);
+            _passwordHasher = new PasswordHasher();
 
             _usersRepository = new UsersRepository(_loggerUsersRepository.Object, _context);
-            _usersService = new UsersServiceImpl(_loggerUsersService.Object, _usersRepository);
+            _usersService = new UsersServiceImpl(_loggerUsersService.Object, _usersRepository, _passwordHasher);
         }
 
         [Fact]
@@ -51,7 +55,7 @@ namespace UsersService.Tests
                 Id = createResponse.Id,
                 Name = "Doe Jane",
                 Email = "doejogn8@gmail.com",
-                HashPassword = "updated"
+                Password = "updated"
             };
 
             var updateResponse = await _usersService.Update(updateRequest, null);
@@ -69,7 +73,7 @@ namespace UsersService.Tests
                 Id = int.MaxValue,
                 Name = "Doe Jane",
                 Email = "doejogn8@gmail.com",
-                HashPassword = "updated"
+                Password = "updated"
             };
 
             var updateResponse = await _usersService.Update(updateRequest, null);
@@ -165,7 +169,7 @@ namespace UsersService.Tests
             {
                 Name = "John Doe",
                 Email = "johndoe78@gmail.com",
-                HashPassword = "OInf13vn09NV09N493Nnnn0FJP1FK"
+                Password = "OInf13vn09NV09N493Nnnn0FJP1FK"
             };
 
             return await _usersService.Create(request, null);

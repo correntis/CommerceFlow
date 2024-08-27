@@ -33,5 +33,8 @@
                 ? success(_value!)
                 : failure(_error!);
         }
+
+        public TValue Value => _value;
+        public TError Error => _error;
     }
 }
