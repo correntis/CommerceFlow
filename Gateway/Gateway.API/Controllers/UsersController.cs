@@ -21,7 +21,7 @@ namespace Gateway.Controllers
             _usersService = usersService;
         }
 
-        [HttpPut]
+        [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateUser([FromBody] UpdateUserModel userModel)
         {
@@ -35,6 +35,32 @@ namespace Gateway.Controllers
             var id = await _usersService.CreateAsync(User);
 
             return Ok($"User created with id {id}");
+        }
+
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserModel userModel)
+        {
+            var User = new User
+            {
+                Id = id,
+                Name = userModel.Name,
+                Email = userModel.Email,
+                HashPassword = userModel.Password
+            };
+
+            var isSuccess = await _usersService.UpdateAsync(User);
+
+            return Ok($"Updated with status " + Convert.ToString(isSuccess));
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var isSuccess = await _usersService.DeleteAsync(id);
+
+            return Ok($"Deleted with status " + Convert.ToString(isSuccess));
         }
 
         [HttpGet("{id}")]
