@@ -1,4 +1,5 @@
-﻿using Gateway.API.Models;
+﻿using Gateway.API;
+using Gateway.API.Models;
 using Gateway.API.Services;
 using Gateway.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -32,9 +33,13 @@ namespace Gateway.Controllers
                 HashPassword = userModel.Password
             };
 
-            var id = await _usersService.CreateAsync(User);
+            var result = await _usersService.CreateAsync(User);
 
-            return Ok($"User created with id {id}");
+
+            return result.Match<IActionResult>(
+                id => Ok($"User created with id {id}"),
+                error => StatusCode(error.Code, error.Message)
+            );
         }
 
         [HttpPut("{id}")]
@@ -49,27 +54,36 @@ namespace Gateway.Controllers
                 HashPassword = userModel.Password
             };
 
-            var isSuccess = await _usersService.UpdateAsync(User);
+            var result = await _usersService.UpdateAsync(User);
 
-            return Ok($"Updated with status " + Convert.ToString(isSuccess));
+            return result.Match<IActionResult>(
+                    success => Ok($"User updated"),
+                    error => StatusCode(error.Code, error.Message)
+            );
         }
 
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var isSuccess = await _usersService.DeleteAsync(id);
+            var result = await _usersService.DeleteAsync(id);
 
-            return Ok($"Deleted with status " + Convert.ToString(isSuccess));
+            return result.Match<IActionResult>(
+                    success => Ok($"User deleted"),
+                    error => StatusCode(error.Code, error.Message)
+            );
         }
 
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<IActionResult> GetUser(int id)
         {
-            var user = await _usersService.GetAsync(id);
+            var result = await _usersService.GetAsync(id);
 
-            return Ok(user);
+            return result.Match<IActionResult>(
+                    user => Ok(user),
+                    error => StatusCode(error.Code, error.Message)
+            );
         }
 
 

@@ -17,7 +17,7 @@ namespace Gateway.API.Services
             address = $"http://{configuration["USERS_HOST"]}:{configuration["USERS_PORT"]}";
         }
 
-        public async Task<int> CreateAsync(User user)
+        public async Task<Result<int, Error>> CreateAsync(User user)
         {
 
             using var channel = GrpcChannel.ForAddress(address);
@@ -32,10 +32,15 @@ namespace Gateway.API.Services
 
             var response = await usersService.CreateAsync(request);
 
+            if (response.ResponseCase == CreateUserResponse.ResponseOneofCase.Error)
+            {
+                return response.Error;
+            }
+
             return response.Id;
         }
 
-        public async Task<bool> UpdateAsync(User user)
+        public async Task<Result<bool,Error>> UpdateAsync(User user)
         {
             using var channel = GrpcChannel.ForAddress(address);
             var usersService = new UsersService.UsersServiceClient(channel);
@@ -50,10 +55,15 @@ namespace Gateway.API.Services
 
             var response = await usersService.UpdateAsync(request);
 
+            if (response.ResponseCase == UpdateUserResponse.ResponseOneofCase.Error)
+            {
+                return response.Error;
+            }
+
             return response.IsSuccess;
         }
 
-        public async Task<bool> DeleteAsync(int userId)
+        public async Task<Result<bool,Error>> DeleteAsync(int userId)
         {
             using var channel = GrpcChannel.ForAddress(address);
             var usersService = new UsersService.UsersServiceClient(channel);
@@ -65,10 +75,15 @@ namespace Gateway.API.Services
 
             var response = await usersService.DeleteAsync(request);
 
+            if (response.ResponseCase == DeleteUserResponse.ResponseOneofCase.Error)
+            {
+                return response.Error;
+            }
+
             return response.IsSuccess;
         }
 
-        public async Task<User> GetAsync(int userId)
+        public async Task<Result<User, Error>> GetAsync(int userId)
         {
             using var channel = GrpcChannel.ForAddress(address);
             var usersService = new UsersService.UsersServiceClient(channel);
@@ -80,11 +95,16 @@ namespace Gateway.API.Services
 
             var response = await usersService.GetAsync(request);
 
+            if (response.ResponseCase == GetUserResponse.ResponseOneofCase.Error)
+            {
+                return response.Error;
+            }
+
             var user = new User()
             {
-                Id = response.Id,
-                Name = response.Name,
-                Email = response.Email
+                Id = response.User.Id,
+                Name = response.User.Name,
+                Email = response.User.Email
             };
 
             return user;
