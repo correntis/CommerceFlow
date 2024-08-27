@@ -28,12 +28,31 @@ namespace UsersService.Services
 
             var id = await _usersRepository.AddAsync(user);
 
-            return new() { Id = id };
+            if (id == 0)
+            {
+                return new CreateUserResponse()
+                {
+                    Error = new() 
+                    { 
+                        Code = StatusCodes.Status500InternalServerError, Message = "Internal Server Error" 
+                    }
+                };
+            }
+
+            return new CreateUserResponse() { Id = id };
         }
 
         public override async Task<DeleteUserResponse> Delete(DeleteUserRequest request, ServerCallContext context)
         {
             var rowsAffected = await _usersRepository.DeleteAsync(request.Id);
+
+            if (rowsAffected == 0)
+            {
+                return new DeleteUserResponse()
+                {
+                    Error = new() { Code = StatusCodes.Status404NotFound, Message = "User Not Found" }
+                };
+            }
 
             return new() { IsSuccess = Convert.ToBoolean(rowsAffected) };
         }
@@ -50,19 +69,38 @@ namespace UsersService.Services
 
             var rowsAffected = await _usersRepository.UpdateAsync(user);
 
+            if (rowsAffected == 0)
+            {
+                return new UpdateUserResponse()
+                {
+                    Error = new() { Code = StatusCodes.Status404NotFound, Message = "User Not Found" }
+                };
+            }
+
             return new() { IsSuccess = Convert.ToBoolean(rowsAffected) };
         }
 
-        public override async Task<UserResponse> Get(GetUserRequest request, ServerCallContext context)
+        public override async Task<GetUserResponse> Get(GetUserRequest request, ServerCallContext context)
         {
             var user = await _usersRepository.GetAsync(request.Id);
 
             if (user is null)
             {
-                return new();
+                return new GetUserResponse()
+                {
+                    Error = new() { Code = StatusCodes.Status404NotFound, Message = "User Not Found" }
+                };
             }
 
-            return new() { Email = user.Email, Name = user.Name, Id = user.Id };
+            return new GetUserResponse() 
+            { 
+                User = new()
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = user.Email,
+                }
+            };
         }
 
         public override async Task<UsersResponse> GetAll(Empty request, ServerCallContext context)   

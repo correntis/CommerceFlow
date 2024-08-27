@@ -50,7 +50,7 @@ namespace CommerceFlow.Persistence.Repositories
 
             var rowsAffected = await _context.SaveChangesAsync();
 
-            return rowsAffected;
+            return rowsAffected == 0 ? 1 : rowsAffected;
         }
         public async Task<int> DeleteAsync(int id)
         {
@@ -65,17 +65,12 @@ namespace CommerceFlow.Persistence.Repositories
 
             var rowsAffected = await _context.SaveChangesAsync();
 
-            return rowsAffected;
+            return rowsAffected == 0 ? 1 : rowsAffected;
         }
 
         public async Task<User> GetAsync(int id)
         {
             var entity = await _context.Users.FindAsync(id);
-
-            if (entity is null)
-            {
-                return new();
-            }
 
             return entity;
         }
@@ -83,11 +78,6 @@ namespace CommerceFlow.Persistence.Repositories
         public async Task<List<User>> GetAllAsync()
         {
             var entities = await _context.Users.ToListAsync();
-
-            if (entities is null)
-            {
-                return [];
-            }
 
             return entities;
         }

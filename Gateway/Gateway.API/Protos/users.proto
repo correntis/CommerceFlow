@@ -9,8 +9,19 @@ service UsersService {
   rpc Create (CreateUserRequest) returns (CreateUserResponse);
   rpc Update (UpdateUserRequest) returns (UpdateUserResponse);
   rpc Delete (DeleteUserRequest) returns (DeleteUserResponse);
-  rpc Get (GetUserRequest) returns (UserResponse);
+  rpc Get (GetUserRequest) returns (GetUserResponse);
   rpc GetAll (Empty) returns (UsersResponse);
+}
+
+message Error {
+	string message = 1;
+	int32 code = 2;
+}
+
+message UserResponse{
+  int32 id = 1;
+  string name = 2;
+  string email = 3;
 }
 
 message CreateUserRequest {
@@ -20,7 +31,10 @@ message CreateUserRequest {
 }
 
 message CreateUserResponse {
-  int32 id = 1;
+  oneof response {
+	  int32 id = 1;
+	  Error error = 2;
+  }
 }
 
 message UpdateUserRequest {
@@ -31,7 +45,10 @@ message UpdateUserRequest {
 }
 
 message UpdateUserResponse {
-  bool is_success = 1;
+  oneof response {
+	  bool is_success = 1;
+	  Error error = 2;
+  }
 }
 
 message DeleteUserRequest {
@@ -39,18 +56,22 @@ message DeleteUserRequest {
 }
 
 message DeleteUserResponse {
-  bool is_success = 1;
-}
+  oneof response {
+	  bool is_success = 1;
+	  Error error = 2;
+  }}
 
 message GetUserRequest{
   int32 id = 1;
 }
 
-message UserResponse{
-  int32 id = 1;
-  string name = 2;
-  string email = 3;
+message GetUserResponse{
+  oneof response {
+	  UserResponse user = 1;
+	  Error error = 2;
+  }
 }
+
 
 message Empty { }
 
