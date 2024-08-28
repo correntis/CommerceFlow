@@ -1,6 +1,5 @@
 ﻿using Gateway.Abstractions;
 using Gateway.Infrastructure;
-using Gateway.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;

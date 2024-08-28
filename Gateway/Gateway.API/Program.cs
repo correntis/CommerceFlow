@@ -1,9 +1,7 @@
-using Gateway;
 using Gateway.Abstractions;
 using Gateway.API.Services;
 using Gateway.Extensions;
 using Gateway.Infrastructure;
-using Gateway.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;

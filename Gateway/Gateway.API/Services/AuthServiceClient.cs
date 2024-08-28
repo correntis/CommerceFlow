@@ -1,14 +1,14 @@
 ﻿using Gateway.Abstractions;
 using Grpc.Net.Client;
 
-namespace Gateway.Services
+namespace Gateway.API.Services
 {
     public class AuthServiceClient : IAuthService
     {
         private readonly ILogger<AuthServiceClient> _logger;
         private readonly string address;
         public AuthServiceClient(
-            ILogger<AuthServiceClient> logger, 
+            ILogger<AuthServiceClient> logger,
             IConfiguration configuration)
         {
             _logger = logger;

@@ -1,13 +1,14 @@
-﻿using Gateway.API;
-using Gateway.API.Models;
+﻿using CSharpFunctionalExtensions;
+using Gateway.API;
+using Gateway.API.Contracts.Users;
+using Gateway.API.Contracts;
 using Gateway.API.Services;
-using Gateway.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Gateway.Controllers        
+namespace Gateway.API.Controllers
 {
-    [ApiController]                      
+    [ApiController]
     [Route("users")]
     public class UsersController : ControllerBase
     {
@@ -22,44 +23,18 @@ namespace Gateway.Controllers
             _usersService = usersService;
         }
 
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> CreateUser([FromBody] UpdateUserModel userModel)
-        {
-            var User = new User
-            {
-                Name = userModel.Name,
-                Email = userModel.Email,
-                Password = userModel.Password
-            };
-
-            var result = await _usersService.CreateAsync(User);
-
-
-            return result.Match<IActionResult>(
-                id => Ok($"User created with id {id}"),
-                error => StatusCode(error.Code, error.Message)
-            );
-        }
-
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserModel userModel)
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserDto userDto)
         {
-            var User = new User
+            var result = await _usersService.UpdateAsync(id, userDto);
+
+            if (result.IsFailure)
             {
-                Id = id,
-                Name = userModel.Name,
-                Email = userModel.Email,
-                Password = userModel.Password
-            };
+                return StatusCode(result.Error.Code, result.Error.Message);
+            }
 
-            var result = await _usersService.UpdateAsync(User);
-
-            return result.Match<IActionResult>(
-                    success => Ok($"User updated"),
-                    error => StatusCode(error.Code, error.Message)
-            );
+            return Ok($"User updated");
         }
 
         [HttpDelete("{id}")]
@@ -68,10 +43,12 @@ namespace Gateway.Controllers
         {
             var result = await _usersService.DeleteAsync(id);
 
-            return result.Match<IActionResult>(
-                    success => Ok($"User deleted"),
-                    error => StatusCode(error.Code, error.Message)
-            );
+            if (result.IsFailure)
+            {
+                return StatusCode(result.Error.Code, result.Error.Message);
+            }
+
+            return Ok($"User deleted");
         }
 
         [HttpGet("{id}")]
@@ -80,16 +57,18 @@ namespace Gateway.Controllers
         {
             var result = await _usersService.GetAsync(id);
 
-            return result.Match<IActionResult>(
-                    user => Ok(user),
-                    error => StatusCode(error.Code, error.Message)
-            );
+            if (result.IsFailure)
+            {
+                return StatusCode(result.Error.Code, result.Error.Message);
+            }
+
+            return Ok(result.Value);
         }
 
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<List<User>>> GetAllUsers()
+        public async Task<ActionResult<List<UserDto>>> GetAllUsers()
         {
             var users = await _usersService.GetAllAsync();
 

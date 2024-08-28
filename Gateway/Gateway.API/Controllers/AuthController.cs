@@ -1,11 +1,11 @@
 ﻿using Gateway.Abstractions;
+using Gateway.API.Contracts.Authentication;
+using Gateway.API.Contracts;
 using Gateway.API.Services;
-using Gateway.Models;
-using Gateway.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Gateway.API.Contracts.Users;
 
-namespace Gateway.Controllers
+namespace Gateway.API.Controllers
 {
     [ApiController]
     [Route("auth")]
@@ -16,7 +16,7 @@ namespace Gateway.Controllers
         private readonly ILogger<AuthController> _logger;
 
         public AuthController(
-            ILogger<AuthController> logger, 
+            ILogger<AuthController> logger,
             IAuthService authService,
             UsersServiceClient _usersService)
         {
@@ -26,65 +26,54 @@ namespace Gateway.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register( [FromBody] RegisterModel registerModel)
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest("Invalid Request Body.");
+                return BadRequest(ModelState);
             }
 
-            var user = new User
-            {
-                Name = registerModel.Name,
-                Email = registerModel.Email,
-                Password = registerModel.Password
-            };
+            var createResult = await _usersService.CreateAsync(request);
 
-            var result = await _usersService.CreateAsync(user);
-
-            if (result.IsError)
+            if (createResult.IsFailure)
             {
-                return StatusCode(result.Error.Code, result.Error.Message);
+                return StatusCode(createResult.Error.Code, createResult.Error.Message);
             }
 
-            int userId = result.Value;
-
-            var response = await _authService.CreateTokensAsync(userId);
+            var response = await _authService.CreateTokensAsync(createResult.Value);
 
             AppendCookies(response);
 
-            return Ok(response);
+            return Ok(createResult.Value);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login( [FromBody] LoginModel loginModel)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
 
             if (!ModelState.IsValid)
             {
-                return BadRequest("Invalid Request Body.");
+                return BadRequest(ModelState);
             }
 
-            var result = await _usersService.Authenticate(loginModel.Email, loginModel.Password);
+            var authResult = await _usersService.Authenticate(request);
 
-            if (result.IsError)
+            if (authResult.IsFailure)
             {
-                return StatusCode(result.Error.Code, result.Error.Message);
+                return StatusCode(authResult.Error.Code, authResult.Error.Message);
             }
 
-            var user = result.Value;
-
-            var response = await _authService.CreateTokensAsync(user.Id);
+            var response = await _authService.CreateTokensAsync(authResult.Value.Id);
 
             AppendCookies(response);
 
-            return Ok(user);
+            return Ok(authResult.Value);
         }
 
         private void AppendCookies(CreateTokensResponse response)
         {
             HttpContext.Response.Cookies.Append("accessToken", response.AccessToken, new CookieOptions()
-            { 
+            {
                 HttpOnly = true,
                 Expires = DateTime.UtcNow.AddMonths(1)
             });

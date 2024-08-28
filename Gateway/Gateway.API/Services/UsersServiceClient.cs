@@ -1,5 +1,8 @@
-﻿using Gateway.Models;
+﻿using Gateway.API.Contracts;
 using Grpc.Net.Client;
+using CSharpFunctionalExtensions;
+using Gateway.API.Contracts.Authentication;
+using Gateway.API.Contracts.Users;
 
 namespace Gateway.API.Services
 {
@@ -17,15 +20,15 @@ namespace Gateway.API.Services
             address = $"http://{configuration["USERS_HOST"]}:{configuration["USERS_PORT"]}";
         }
 
-        public async Task<Result<User, Error>> Authenticate(string email, string password)
+        public async Task<Result<UserResponse, Error>> Authenticate(LoginRequest loginRequest)
         {
             using var channel = GrpcChannel.ForAddress(address);
             var usersService = new UsersService.UsersServiceClient(channel);
 
             var request = new AuthenticateRequest()
             {
-                Email = email,
-                Password = password
+                Email = loginRequest.Email,
+                Password = loginRequest.Password
             };
 
             var response = await usersService.AuthenticateAsync(request);
@@ -35,17 +38,10 @@ namespace Gateway.API.Services
                 return response.Error;
             }
 
-            var user = new User()
-            {
-                Id = response.User.Id,
-                Name = response.User.Name,
-                Email = response.User.Email
-            };
-
-            return user;
+            return response.User;
         }
 
-        public async Task<Result<int, Error>> CreateAsync(User user)
+        public async Task<Result<int, Error>> CreateAsync(RegisterRequest reqisterRequest)
         {
 
             using var channel = GrpcChannel.ForAddress(address);
@@ -53,9 +49,9 @@ namespace Gateway.API.Services
 
             var request = new CreateUserRequest()
             {
-                Email = user.Email,
-                Name = user.Name,
-                Password = user.Password
+                Email = reqisterRequest.Email,
+                Name = reqisterRequest.Name,
+                Password = reqisterRequest.Password
             };
 
             var response = await usersService.CreateAsync(request);
@@ -68,17 +64,17 @@ namespace Gateway.API.Services
             return response.Id;
         }
 
-        public async Task<Result<bool,Error>> UpdateAsync(User user)
+        public async Task<Result<bool,Error>> UpdateAsync(int userId, UserDto userRequest)
         {
             using var channel = GrpcChannel.ForAddress(address);
             var usersService = new UsersService.UsersServiceClient(channel);
 
             var request = new UpdateUserRequest()
             {
-                Id = user.Id,
-                Email = user.Email,
-                Name = user.Name,
-                Password = user.Password
+                Id = userId,
+                Email = userRequest.Email,
+                Name = userRequest.Name,
+                Password = userRequest.Password
             };
 
             var response = await usersService.UpdateAsync(request);
@@ -111,7 +107,7 @@ namespace Gateway.API.Services
             return response.IsSuccess;
         }
 
-        public async Task<Result<User, Error>> GetAsync(int userId)
+        public async Task<Result<UserResponse, Error>> GetAsync(int userId)
         {
             using var channel = GrpcChannel.ForAddress(address);
             var usersService = new UsersService.UsersServiceClient(channel);
@@ -128,32 +124,17 @@ namespace Gateway.API.Services
                 return response.Error;
             }
 
-            var user = new User()
-            {
-                Id = response.User.Id,
-                Name = response.User.Name,
-                Email = response.User.Email
-            };
-
-            return user;
+            return response.User;
         }
 
-        public async Task<List<User>> GetAllAsync()
+        public async Task<List<UserResponse>> GetAllAsync()
         {
             using var channel = GrpcChannel.ForAddress(address);
             var usersService = new UsersService.UsersServiceClient(channel);
 
             var response = await usersService.GetAllAsync(new Empty());
 
-            var users = response.Users.Select(User => new User()
-            {
-                Id = User.Id,
-                Name = User.Name,
-                Email = User.Email
-
-            });
-
-            return users.ToList();
+            return [.. response.Users];
         }
     }
 }
