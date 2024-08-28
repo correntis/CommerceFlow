@@ -1,5 +1,6 @@
 using CommerceFlow.Persistence;
 using CommerceFlow.Persistence.Abstractions;
+using CommerceFlow.Persistence.Entities;
 using CommerceFlow.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -8,7 +9,7 @@ using UsersService.API.Abstractions;
 using UsersService.API.Infrastructure;
 using UsersService.Services;
 
-namespace UsersService.Tests
+namespace UsersService.Tests.Unit
 {
     public class UsersServiceTests
     {
@@ -37,10 +38,19 @@ namespace UsersService.Tests
         [Fact]
         public async Task CreateUser_ShouldSaveUserToDb()
         {
-            var response = await CreateUserInMemory();
+            var user = CreateUser();
+            var response = await CreateUserInMemoryAsync(user);
 
+            var getRequest = new GetUserRequest()
+            {
+                Id = response.Id
+            };
+
+            var resultUser = await _usersService.Get(getRequest, null);
 
             Assert.NotNull(response);
+            Assert.NotNull(resultUser);
+            Assert.NotNull(resultUser.User.Location);
             Assert.True(response.ResponseCase == CreateUserResponse.ResponseOneofCase.Id);
             Assert.True(response.Id > 0);
         }
@@ -48,20 +58,31 @@ namespace UsersService.Tests
         [Fact]
         public async Task UpdateExistingUser_ShouldUpdateUser()
         {
-            var createResponse = await CreateUserInMemory();
+            var user = CreateUser();
+            var createResponse = CreateUserInMemoryAsync(user);
 
             var updateRequest = new UpdateUserRequest()
             {
                 Id = createResponse.Id,
                 Name = "Doe Jane",
                 Email = "doejogn8@gmail.com",
-                Password = "updated"
+                Password = "updated",
+                Phone = "0987654321",
+                Location = new UserLocation
+                {
+                    Address = "4321 Elm St",
+                    City = "Othertown"
+                }
             };
 
             var updateResponse = await _usersService.Update(updateRequest, null);
+            var resultUser = await _context.Users.FindAsync(createResponse.Id);
 
             Assert.NotNull(updateResponse);
             Assert.True(updateResponse.ResponseCase == UpdateUserResponse.ResponseOneofCase.IsSuccess);
+            Assert.True(updateResponse.IsSuccess);
+            Assert.True(resultUser.Name == updateRequest.Name);
+            Assert.True(resultUser.Location.City == updateRequest.Location.City);
         }
 
 
@@ -73,7 +94,8 @@ namespace UsersService.Tests
                 Id = int.MaxValue,
                 Name = "Doe Jane",
                 Email = "doejogn8@gmail.com",
-                Password = "updated"
+                Password = "updated",
+                Location = new UserLocation()
             };
 
             var updateResponse = await _usersService.Update(updateRequest, null);
@@ -85,7 +107,8 @@ namespace UsersService.Tests
         [Fact]
         public async Task DeleteExistingUser_ShouldDeleteUser()
         {
-            var createResponse = await CreateUserInMemory();
+            var user = CreateUser();
+            var createResponse = await CreateUserInMemoryAsync(user);
 
             var deleteRequest = new DeleteUserRequest()
             {
@@ -115,7 +138,8 @@ namespace UsersService.Tests
         [Fact]
         public async Task GetExistingUserById_ShouldReturnUser()
         {
-            var createResponse = await CreateUserInMemory();
+            var user = CreateUser();
+            var createResponse = await CreateUserInMemoryAsync(user);
 
             var getRequest = new GetUserRequest()
             {
@@ -127,6 +151,8 @@ namespace UsersService.Tests
             Assert.NotNull(getResponse);
             Assert.True(getResponse.ResponseCase == GetUserResponse.ResponseOneofCase.User);
             Assert.Equal(createResponse.Id, getResponse.User.Id);
+            Assert.Equal(user.Name, getResponse.User.Name);
+            Assert.Equal(user.Location.City, getResponse.User.Location.City);
         }
 
         [Fact]
@@ -151,7 +177,8 @@ namespace UsersService.Tests
 
             for (var i = 0; i < amount; i++)
             {
-                var createResponse =  await CreateUserInMemory();
+                var user = CreateUser(i);
+                var createResponse = await CreateUserInMemoryAsync(user);
                 usersId.Add(createResponse.Id);
             }
 
@@ -163,13 +190,51 @@ namespace UsersService.Tests
             Assert.Contains(usersId, firstId => usersId.Any(secondId => firstId > secondId));
         }
 
-        private async Task<CreateUserResponse> CreateUserInMemory()
+        private User CreateUser()
+        {
+            return new User
+            {
+                Name = "John Doe",
+                Email = "example@test.com",
+                HashPassword = "password",
+                Phone = "1234567890",
+                Location = new Location
+                {
+                    Address = "1234 Main St",
+                    City = "Anytown"
+                }
+            };
+        }
+
+        private User CreateUser(int i)
+        {
+            return new User
+            {
+                Name = "John Doe" + i,
+                Email = "example@test.com" + i,
+                HashPassword = "password" + i,
+                Phone = "1234567890" + i,
+                Location = new Location
+                {
+                    Address = "1234 Main St" + i,
+                    City = "Anytown" + i
+                }
+            };
+        }
+
+        private async Task<CreateUserResponse> CreateUserInMemoryAsync(User user)
         {
             var request = new CreateUserRequest()
             {
-                Name = "John Doe",
-                Email = "johndoe78@gmail.com",
-                Password = "OInf13vn09NV09N493Nnnn0FJP1FK"
+                Name = user.Name,
+                Email = user.Email,
+                Password = user.HashPassword,
+                Phone = user.Phone,
+                Location = new UserLocation
+                {
+                    Address = user.Location.Address,
+                    City = user.Location.City
+                }
             };
 
             return await _usersService.Create(request, null);
