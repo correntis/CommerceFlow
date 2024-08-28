@@ -18,10 +18,17 @@ message Error {
 	int32 code = 2;
 }
 
+message UserLocation {
+  string address = 1;
+  string city = 2;
+}
+
 message UserResponse{
   int32 id = 1;
   string name = 2;
   string email = 3;
+  string phone = 4;
+  UserLocation location = 5;
 }
 
 message AuthenticateRequest{
@@ -40,6 +47,8 @@ message CreateUserRequest {
   string name = 1;
   string email = 2;
   string password = 3;
+  string phone = 4;
+  UserLocation location = 5;
 }
 
 message CreateUserResponse {
@@ -54,6 +63,8 @@ message UpdateUserRequest {
   string name = 2;
   string email = 3;
   string password = 4;
+  string phone = 5;
+  UserLocation location = 6;
 }
 
 message UpdateUserResponse {

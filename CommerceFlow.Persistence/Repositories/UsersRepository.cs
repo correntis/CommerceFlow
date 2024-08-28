@@ -26,7 +26,12 @@ namespace CommerceFlow.Persistence.Repositories
             {
                 Name = user.Name,
                 Email = user.Email,
-                HashPassword = user.HashPassword
+                HashPassword = user.HashPassword,
+                Location = new Location()
+                {
+                    Address = user.Location.Address,
+                    City = user.Location.City,
+                } 
             };
 
             await _context.Users.AddAsync(entity);
@@ -44,9 +49,16 @@ namespace CommerceFlow.Persistence.Repositories
                 return 0;
             }
 
+            await _context.Entry(entity)
+                    .Reference(x => x.Location)
+                    .LoadAsync();
+
             entity.Name = user.Name;
             entity.Email = user.Email;
             entity.HashPassword = user.HashPassword;
+
+            entity.Location.Address = user.Location.Address;
+            entity.Location.City = user.Location.City;
 
             var rowsAffected = await _context.SaveChangesAsync();
 
@@ -61,6 +73,10 @@ namespace CommerceFlow.Persistence.Repositories
                 return 0;
             }
 
+            await _context.Entry(entity)
+                .Reference(x => x.Location)
+                .LoadAsync();
+
             _context.Users.Remove(entity);
 
             var rowsAffected = await _context.SaveChangesAsync();
@@ -72,12 +88,23 @@ namespace CommerceFlow.Persistence.Repositories
         {
             var entity = await _context.Users.FindAsync(id);
 
+            if (entity is null)
+            {
+                return null;
+            }
+
+            await _context.Entry(entity)
+                .Reference(x => x.Location)
+                .LoadAsync();
+
             return entity;
         }
 
         public async Task<List<User>> GetAllAsync()
         {
-            var entities = await _context.Users.ToListAsync();
+            var entities = await _context.Users
+                .Include(u => u.Location)
+                .ToListAsync();
 
             return entities;
         }
@@ -85,6 +112,15 @@ namespace CommerceFlow.Persistence.Repositories
         public async Task<User> GetByEmailAsync(string email)
         {
             var entity = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
+
+            if (entity is null)
+            {
+                return null;
+            }
+
+            await _context.Entry(entity)
+                .Reference(x => x.Location)
+                .LoadAsync();
 
             return entity;
         }

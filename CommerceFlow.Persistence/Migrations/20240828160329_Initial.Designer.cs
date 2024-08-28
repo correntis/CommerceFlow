@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CommerceFlow.Persistence.Migrations
 {
     [DbContext(typeof(CommerceDbContext))]
-    [Migration("20240826200027_Initial")]
+    [Migration("20240828160329_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -23,6 +23,31 @@ namespace CommerceFlow.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("CommerceFlow.Persistence.Entities.Location", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("text");
+
+                    b.Property<string>("City")
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Locations", (string)null);
+                });
 
             modelBuilder.Entity("CommerceFlow.Persistence.Entities.User", b =>
                 {
@@ -44,9 +69,26 @@ namespace CommerceFlow.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Phone")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("CommerceFlow.Persistence.Entities.Location", b =>
+                {
+                    b.HasOne("CommerceFlow.Persistence.Entities.User", null)
+                        .WithOne("Location")
+                        .HasForeignKey("CommerceFlow.Persistence.Entities.Location", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CommerceFlow.Persistence.Entities.User", b =>
+                {
+                    b.Navigation("Location");
                 });
 #pragma warning restore 612, 618
         }
