@@ -41,7 +41,7 @@ namespace Gateway.API.Services
             return response.User;
         }
 
-        public async Task<Result<int, Error>> CreateAsync(RegisterRequest reqisterRequest)
+        public async Task<Result<int, Error>> CreateAsync(RegisterRequest registerRequest)
         {
 
             using var channel = GrpcChannel.ForAddress(address);
@@ -49,9 +49,10 @@ namespace Gateway.API.Services
 
             var request = new CreateUserRequest()
             {
-                Email = reqisterRequest.Email,
-                Name = reqisterRequest.Name,
-                Password = reqisterRequest.Password
+                Email = registerRequest.Email,
+                Name = registerRequest.Name,
+                Password = registerRequest.Password,
+                Location = new UserLocation()
             };
 
             var response = await usersService.CreateAsync(request);
@@ -74,7 +75,14 @@ namespace Gateway.API.Services
                 Id = userId,
                 Email = userRequest.Email,
                 Name = userRequest.Name,
-                Password = userRequest.Password
+                Password = userRequest.Password,
+                Phone = userRequest.Phone,
+                Location = new UserLocation()
+                {
+                    City = userRequest.City,
+                    Address = userRequest.Address
+                }
+
             };
 
             var response = await usersService.UpdateAsync(request);

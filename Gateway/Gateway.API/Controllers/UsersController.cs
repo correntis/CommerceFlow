@@ -27,6 +27,11 @@ namespace Gateway.API.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UserDto userDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var result = await _usersService.UpdateAsync(id, userDto);
 
             if (result.IsFailure)

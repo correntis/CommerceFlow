@@ -57,6 +57,7 @@ namespace UsersService.Tests.Unit
 
             resultUser.Name = "Othername";
             resultUser.Location.City = "Othertown";
+            resultUser.Phone = "0987654321";
 
             await _usersRepository.UpdateAsync(resultUser);
 
@@ -65,6 +66,7 @@ namespace UsersService.Tests.Unit
             Assert.NotNull(updatedUser);
             Assert.Equal("Othername", updatedUser.Name);
             Assert.Equal("Othertown", updatedUser.Location.City);
+            Assert.Equal("0987654321", updatedUser.Phone);
         }
 
         [Fact]

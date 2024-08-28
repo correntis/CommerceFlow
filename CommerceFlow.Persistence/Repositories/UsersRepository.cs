@@ -55,6 +55,7 @@ namespace CommerceFlow.Persistence.Repositories
 
             entity.Name = user.Name;
             entity.Email = user.Email;
+            entity.Phone = user.Phone;
             entity.HashPassword = user.HashPassword;
 
             entity.Location.Address = user.Location.Address;

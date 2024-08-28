@@ -110,6 +110,7 @@ namespace UsersService.Services
                 Id = request.Id,
                 Name = request.Name,
                 Email = request.Email,
+                Phone = request.Phone,
                 HashPassword = _passwordHasher.Hash(request.Password),
                 Location = new() { Address = request?.Location.Address, City = request?.Location.City }
             };
@@ -146,6 +147,7 @@ namespace UsersService.Services
                     Id = user.Id,
                     Name = user.Name,
                     Email = user.Email,
+                    Phone = user.Phone,
                     Location = new() { Address = user.Location.Address, City = user.Location.City }
                 }
             };
@@ -166,6 +168,7 @@ namespace UsersService.Services
                 Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
+                Phone = user.Phone,
                 Location = new() { City = user.Location.City, Address = user.Location.Address }
             }));
 
