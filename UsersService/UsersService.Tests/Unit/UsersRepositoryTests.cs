@@ -40,7 +40,6 @@ namespace UsersService.Tests.Unit
 
             Assert.True(id > 0);
             Assert.NotNull(resultUser);
-            Assert.NotNull(resultUser.Location);
         }
 
         [Fact]
@@ -49,7 +48,7 @@ namespace UsersService.Tests.Unit
             var user = CreateUser();
 
             var id = await _usersRepository.AddAsync(user);
-            var resultUser = await _context.Users.FindAsync(id);
+            var resultUser = await _usersRepository.GetAsync(id);
 
             Assert.NotNull(resultUser);
             Assert.NotNull(resultUser.Location);
@@ -93,12 +92,8 @@ namespace UsersService.Tests.Unit
                 Name = "John Doe",
                 Email = "example@test.com",
                 HashPassword = "password",
-                Phone = "1234567890",
-                Location = new Location
-                {
-                    Address = "1234 Main St",
-                    City = "Anytown"
-                }
+                Location = new(),
+                Role = new() { Name = UserRoles.User }
             };
         }
     }

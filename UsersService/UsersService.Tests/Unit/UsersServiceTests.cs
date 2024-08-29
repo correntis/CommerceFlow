@@ -51,6 +51,8 @@ namespace UsersService.Tests.Unit
             Assert.NotNull(response);
             Assert.NotNull(resultUser);
             Assert.NotNull(resultUser.User.Location);
+            Assert.NotNull(resultUser.User.Role);
+            Assert.Equal(UserRoles.User, resultUser.User.Role);
             Assert.True(response.ResponseCase == CreateUserResponse.ResponseOneofCase.Id);
             Assert.True(response.Id > 0);
         }
@@ -79,6 +81,8 @@ namespace UsersService.Tests.Unit
             var resultUser = await _context.Users.FindAsync(createResponse.Id);
 
             Assert.NotNull(updateResponse);
+            Assert.NotNull(resultUser.Location);
+            Assert.NotNull(resultUser.Role);
             Assert.True(updateResponse.ResponseCase == UpdateUserResponse.ResponseOneofCase.IsSuccess);
             Assert.True(updateResponse.IsSuccess);
             Assert.True(resultUser.Name == updateRequest.Name);
@@ -152,7 +156,6 @@ namespace UsersService.Tests.Unit
             Assert.True(getResponse.ResponseCase == GetUserResponse.ResponseOneofCase.User);
             Assert.Equal(createResponse.Id, getResponse.User.Id);
             Assert.Equal(user.Name, getResponse.User.Name);
-            Assert.Equal(user.Location.City, getResponse.User.Location.City);
         }
 
         [Fact]
@@ -196,13 +199,7 @@ namespace UsersService.Tests.Unit
             {
                 Name = "John Doe",
                 Email = "example@test.com",
-                HashPassword = "password",
-                Phone = "1234567890",
-                Location = new Location
-                {
-                    Address = "1234 Main St",
-                    City = "Anytown"
-                }
+                HashPassword = "password"
             };
         }
 
@@ -212,13 +209,7 @@ namespace UsersService.Tests.Unit
             {
                 Name = "John Doe" + i,
                 Email = "example@test.com" + i,
-                HashPassword = "password" + i,
-                Phone = "1234567890" + i,
-                Location = new Location
-                {
-                    Address = "1234 Main St" + i,
-                    City = "Anytown" + i
-                }
+                HashPassword = "password" + i
             };
         }
 
@@ -229,12 +220,7 @@ namespace UsersService.Tests.Unit
                 Name = user.Name,
                 Email = user.Email,
                 Password = user.HashPassword,
-                Phone = user.Phone,
-                Location = new UserLocation
-                {
-                    Address = user.Location.Address,
-                    City = user.Location.City
-                }
+
             };
 
             return await _usersService.Create(request, null);
