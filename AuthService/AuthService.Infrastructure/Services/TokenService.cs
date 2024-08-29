@@ -19,7 +19,7 @@ namespace AuthService.Infrastructure.Services
             _jwtOptions = jwtOptions;
         }
 
-        public string CreateAccessToken(int userId)
+        public string CreateAccessToken(int userId, string userRole)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Value.Key));
 
@@ -28,10 +28,11 @@ namespace AuthService.Infrastructure.Services
             var jwtClaims = new List<Claim>()
             {
                 new("User_Id", userId.ToString()),
+                new(ClaimTypes.Role, userRole),
                 new(JwtRegisteredClaimNames.Sub, userId.ToString())
             };
 
-            var expiresTime = DateTime.UtcNow.AddDays(3);
+            var expiresTime = DateTime.UtcNow.AddSeconds(30);
 
             var token = new JwtSecurityToken(
                 issuer: _jwtOptions.Value.Issuer,

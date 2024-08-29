@@ -3,10 +3,11 @@ using Grpc.Net.Client;
 using CSharpFunctionalExtensions;
 using Gateway.API.Contracts.Authentication;
 using Gateway.API.Contracts.Users;
+using Gateway.API.Abstractions;
 
 namespace Gateway.API.Services
 {
-    public class UsersServiceClient
+    public class UsersServiceClient : IUsersService
     {
         private readonly ILogger<UsersServiceClient> _logger;
 
@@ -51,8 +52,7 @@ namespace Gateway.API.Services
             {
                 Email = registerRequest.Email,
                 Name = registerRequest.Name,
-                Password = registerRequest.Password,
-                Location = new UserLocation()
+                Password = registerRequest.Password
             };
 
             var response = await usersService.CreateAsync(request);
@@ -65,7 +65,7 @@ namespace Gateway.API.Services
             return response.Id;
         }
 
-        public async Task<Result<bool,Error>> UpdateAsync(int userId, UserDto userRequest)
+        public async Task<Result<bool, Error>> UpdateAsync(int userId, UserDto userRequest)
         {
             using var channel = GrpcChannel.ForAddress(address);
             var usersService = new UsersService.UsersServiceClient(channel);
@@ -95,7 +95,7 @@ namespace Gateway.API.Services
             return response.IsSuccess;
         }
 
-        public async Task<Result<bool,Error>> DeleteAsync(int userId)
+        public async Task<Result<bool, Error>> DeleteAsync(int userId)
         {
             using var channel = GrpcChannel.ForAddress(address);
             var usersService = new UsersService.UsersServiceClient(channel);

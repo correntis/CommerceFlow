@@ -11,6 +11,7 @@ service AuthService {
 
 message CreateTokensRequest{
 	int32 user_id = 1;
+	string user_role = 2;
 }
 
 message CreateTokensResponse{
@@ -20,6 +21,7 @@ message CreateTokensResponse{
 
 message VerifyRequest{
 	string refresh_token = 1;
+	string user_role = 2;
 }
 
 message VerifyResponse{

@@ -1,4 +1,5 @@
 ﻿using Gateway.Abstractions;
+using Gateway.API.Infrastructure;
 using Grpc.Net.Client;
 
 namespace Gateway.API.Services
@@ -15,7 +16,7 @@ namespace Gateway.API.Services
             address = $"http://{configuration["AUTH_HOST"]}:{configuration["AUTH_PORT"]}";
         }
 
-        public async Task<CreateTokensResponse> CreateTokensAsync(int userId)
+        public async Task<CreateTokensResponse> CreateTokensAsync(int userId, string userRole)
         {
             _logger.LogInformation("Method - CreateTokens - {Time} - {Address}", DateTime.Now, address);
 
@@ -24,7 +25,8 @@ namespace Gateway.API.Services
 
             var request = new CreateTokensRequest
             {
-                UserId = userId
+                UserId = userId,
+                UserRole = userRole
             };
 
             var response = await client.CreateTokensAsync(request);
@@ -32,7 +34,7 @@ namespace Gateway.API.Services
             return response;
         }
 
-        public async Task<VerifyResponse> VerifyAsync(string refreshToken)
+        public async Task<VerifyResponse> VerifyAsync(string refreshToken, string userRole)
         {
             _logger.LogInformation("Method - Verify - {Time}", DateTime.Now);
 
@@ -41,7 +43,8 @@ namespace Gateway.API.Services
 
             var request = new VerifyRequest
             {
-                RefreshToken = refreshToken
+                RefreshToken = refreshToken,
+                UserRole = userRole
             };
 
             var response = await client.VerifyAsync(request);

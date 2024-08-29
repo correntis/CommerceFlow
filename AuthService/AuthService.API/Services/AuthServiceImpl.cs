@@ -25,7 +25,7 @@ namespace AuthService.Services
 
             _logger.LogInformation("Create access and refresh tokens...");
 
-            var accessToken = IssueAccessToken(request.UserId);
+            var accessToken = IssueAccessToken(request.UserId, request.UserRole);
             var refreshToken = await IssueRefreshTokenAsync(request.UserId);
 
             var createTokensResponse = new CreateTokensResponse
@@ -57,7 +57,8 @@ namespace AuthService.Services
             await RemoveTokenFromCacheAsync(request.RefreshToken);
 
             var userId = int.Parse(userIdString);
-            var newAccessToken = IssueAccessToken(userId);
+
+            var newAccessToken = IssueAccessToken(userId, request.UserRole);
             var newRefreshToken = await IssueRefreshTokenAsync(userId);
             
             var verifyResponse = new VerifyResponse
@@ -71,9 +72,9 @@ namespace AuthService.Services
             return verifyResponse;
         }
 
-        public string IssueAccessToken(int userId)
+        public string IssueAccessToken(int userId, string userRole)
         {
-            return _tokenService.CreateAccessToken(userId);
+            return _tokenService.CreateAccessToken(userId, userRole);
         }
 
         public async Task<string> IssueRefreshTokenAsync(int userId)

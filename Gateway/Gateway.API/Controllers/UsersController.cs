@@ -5,6 +5,8 @@ using Gateway.API.Contracts;
 using Gateway.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Gateway.API.Abstractions;
+using Gateway.API.Infrastructure;
 
 namespace Gateway.API.Controllers
 {
@@ -13,11 +15,11 @@ namespace Gateway.API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly ILogger<UsersController> _logger;
-        private readonly UsersServiceClient _usersService;
+        private readonly IUsersService _usersService;
 
         public UsersController(
             ILogger<UsersController> logger,
-            UsersServiceClient usersService)
+            IUsersService usersService)
         {
             _logger = logger;
             _usersService = usersService;
@@ -40,6 +42,18 @@ namespace Gateway.API.Controllers
             }
 
             return Ok($"User updated");
+        }
+
+        [HttpPut("{id}/role")]
+        [Authorize(Roles = UserRoles.Admin)]
+        public async Task<IActionResult> UpdateUserRole(int id)
+        {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            return Ok($"User role updated" + id);
         }
 
         [HttpDelete("{id}")]

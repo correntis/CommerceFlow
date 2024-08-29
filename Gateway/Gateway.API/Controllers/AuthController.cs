@@ -4,6 +4,8 @@ using Gateway.API.Contracts;
 using Gateway.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Gateway.API.Contracts.Users;
+using Gateway.API.Infrastructure;
+using Gateway.API.Abstractions;
 
 namespace Gateway.API.Controllers
 {
@@ -12,17 +14,17 @@ namespace Gateway.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly UsersServiceClient _usersService;
+        private readonly IUsersService _usersService;
         private readonly ILogger<AuthController> _logger;
 
         public AuthController(
             ILogger<AuthController> logger,
             IAuthService authService,
-            UsersServiceClient _usersService)
+            IUsersService usersService)
         {
             _logger = logger;
             _authService = authService;
-            this._usersService = _usersService;
+            _usersService = usersService;
         }
 
         [HttpPost("register")]
@@ -40,7 +42,7 @@ namespace Gateway.API.Controllers
                 return StatusCode(createResult.Error.Code, createResult.Error.Message);
             }
 
-            var response = await _authService.CreateTokensAsync(createResult.Value);
+            var response = await _authService.CreateTokensAsync(createResult.Value, UserRoles.User);
 
             AppendCookies(response);
 
@@ -62,7 +64,7 @@ namespace Gateway.API.Controllers
                 return StatusCode(authResult.Error.Code, authResult.Error.Message);
             }
 
-            var response = await _authService.CreateTokensAsync(authResult.Value.Id);
+            var response = await _authService.CreateTokensAsync(authResult.Value.Id, authResult.Value.Role);
 
             AppendCookies(response);
 
