@@ -1,4 +1,5 @@
 ﻿using Gateway.Abstractions;
+using Gateway.API.Abstractions;
 using Gateway.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -52,37 +53,9 @@ namespace Gateway.Extensions
                         {
                             if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
                             {
-                                if (context.Request.Cookies.ContainsKey("refreshToken"))
-                                {
-                                    var oldTokenDecoded = new JwtSecurityTokenHandler()
-                                        .ReadJwtToken(context.Request.Cookies["accessToken"]);
+                                var tokenService = context.HttpContext.RequestServices.GetRequiredService<ITokenService>();
 
-                                    var userRole = oldTokenDecoded.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
-
-                                    if (userRole is null)
-                                    {
-                                        return;
-                                    }
-
-                                    var refreshToken = context.Request.Cookies["refreshToken"];
-                                    var authClient = context.HttpContext.RequestServices.GetRequiredService<IAuthService>();
-                                    var verifyResponse = await authClient.VerifyAsync(refreshToken, userRole.Value);
-
-                                    if (verifyResponse.IsValid)
-                                    {
-                                        context.Response.Cookies.Append("accessToken", verifyResponse.AccessToken,
-                                            new CookieOptions() { HttpOnly = true, Expires = DateTime.UtcNow.AddMonths(1) }
-                                        );
-
-                                        context.Response.Cookies.Append("refreshToken", verifyResponse.RefreshToken,
-                                            new CookieOptions() { HttpOnly = true, Expires = DateTime.UtcNow.AddMonths(1) }
-                                        );
-
-                                        context.Response.StatusCode = StatusCodes.Status426UpgradeRequired;
-
-                                        return;
-                                    }
-                                }
+                                var success = await tokenService.HandleUpdateTokenAsync(context);
                             }
                         }
                     };

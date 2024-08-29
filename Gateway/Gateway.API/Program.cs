@@ -20,11 +20,10 @@ services.AddGatewayCookieAuthentication(configuration);
 
 services.AddScoped<IAuthService, AuthServiceClient>();
 services.AddScoped<IUsersService ,UsersServiceClient>();
+services.AddScoped<ITokenService , TokenService>();
 
 
 var app = builder.Build();
-
-app.UseExceptionHandler();
 
 app.UseSwagger();
 app.UseSwaggerUI();
