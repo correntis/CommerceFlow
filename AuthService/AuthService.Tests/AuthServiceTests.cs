@@ -48,7 +48,7 @@ namespace AuthService.Tests
         {
             var userId = 123;
 
-            var token = _authService.IssueAccessToken(userId);
+            var token = _authService.IssueAccessToken(userId, "User");
             var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
 
             Assert.NotNull(token);
