@@ -27,22 +27,20 @@ namespace CommerceFlow.Persistence.Repositories
                 Name = user.Name,
                 Email = user.Email,
                 HashPassword = user.HashPassword,
-                Location = new Location()
-                {
-                    Address = user.Location.Address,
-                    City = user.Location.City,
-                } 
+                Location = new() { },
+                Role = new() { Name = user.Role.Name }
             };
 
-            await _context.Users.AddAsync(entity);
+            await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            return entity.Id;
+            return user.Id;
         }
 
         public async Task<int> UpdateAsync(User user)
         {
-            var entity = await _context.Users.FindAsync(user.Id);
+            var entity = await _context.Users
+                .FindAsync(user.Id);
 
             if (entity is null)
             {
@@ -77,6 +75,9 @@ namespace CommerceFlow.Persistence.Repositories
             await _context.Entry(entity)
                 .Reference(x => x.Location)
                 .LoadAsync();
+            await _context.Entry(entity)
+                .Reference(x => x.Role)
+                .LoadAsync();
 
             _context.Users.Remove(entity);
 
@@ -98,6 +99,10 @@ namespace CommerceFlow.Persistence.Repositories
                 .Reference(x => x.Location)
                 .LoadAsync();
 
+            await _context.Entry(entity)
+                .Reference(x => x.Role)
+                .LoadAsync();
+
             return entity;
         }
 
@@ -105,6 +110,8 @@ namespace CommerceFlow.Persistence.Repositories
         {
             var entities = await _context.Users
                 .Include(u => u.Location)
+                .Include(u => u.Role)
+                .AsNoTracking()
                 .ToListAsync();
 
             return entities;
@@ -121,6 +128,10 @@ namespace CommerceFlow.Persistence.Repositories
 
             await _context.Entry(entity)
                 .Reference(x => x.Location)
+                .LoadAsync();
+
+            await _context.Entry(entity)
+                .Reference(x => x.Role)
                 .LoadAsync();
 
             return entity;

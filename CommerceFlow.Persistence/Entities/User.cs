@@ -3,6 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CommerceFlow.Persistence.Entities
 {
+    public static class UserRoles
+    {
+        public const string Admin = "Admin";
+        public const string Manager = "Manager";
+        public const string User = "User";
+    }
+
     public class User
     {
         public int Id { get; set; }
@@ -11,5 +18,6 @@ namespace CommerceFlow.Persistence.Entities
         public string Phone { get; set; } = string.Empty;
         public string HashPassword { get; set; } = string.Empty;
         public Location Location { get; set; }
+        public Role Role { get; set; }
     }
 }

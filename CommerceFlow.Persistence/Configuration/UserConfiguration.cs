@@ -16,6 +16,8 @@ namespace CommerceFlow.Persistence.Configuration
 
             builder.Property(x => x.Email)
                 .IsRequired();
+            builder.HasIndex(x => x.Email)
+                .IsUnique();
 
             builder.Property(x => x.HashPassword)
                 .IsRequired();
@@ -23,6 +25,10 @@ namespace CommerceFlow.Persistence.Configuration
             builder.HasOne(x => x.Location)
                 .WithOne()
                 .HasForeignKey<Location>(x => x.UserId);
+
+            builder.HasOne(u => u.Role)
+                .WithOne()
+                .HasForeignKey<Role>(r => r.Id);
         }
     }
 }

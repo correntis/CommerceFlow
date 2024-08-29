@@ -45,8 +45,8 @@ namespace UsersService.Services
             {
                 User = new() 
                 { 
-                    Id = user.Id, Name = user.Name, Email = user.Email,
-                    Location = new() { Address = user.Location.Address, City = user.Location.City }
+                    Id = user.Id, Name = user.Name, Email = user.Email, Role = user.Role.Name,
+                    Location = new() { Address = user.Location.Address, City = user.Location.City },
                 }
             };
         }
@@ -69,7 +69,8 @@ namespace UsersService.Services
                 Name = request.Name,
                 Email = request.Email,
                 HashPassword = _passwordHasher.Hash(request.Password),
-                Location = new() { Address = request.Location.Address, City = request.Location.City }
+                Location = new() { },
+                Role = new() { Name = UserRoles.User }
             };
 
             var id = await _usersRepository.AddAsync(user);
@@ -148,6 +149,7 @@ namespace UsersService.Services
                     Name = user.Name,
                     Email = user.Email,
                     Phone = user.Phone,
+                    Role = user.Role.Name,
                     Location = new() { Address = user.Location.Address, City = user.Location.City }
                 }
             };
@@ -169,6 +171,7 @@ namespace UsersService.Services
                 Name = user.Name,
                 Email = user.Email,
                 Phone = user.Phone,
+                Role = user.Role.Name,
                 Location = new() { City = user.Location.City, Address = user.Location.Address }
             }));
 

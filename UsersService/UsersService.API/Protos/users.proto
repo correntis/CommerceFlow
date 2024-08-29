@@ -28,7 +28,8 @@ message UserResponse{
   string name = 2;
   string email = 3;
   string phone = 4;
-  UserLocation location = 5;
+  string role = 5;
+  UserLocation location = 6;
 }
 
 message AuthenticateRequest{
@@ -47,8 +48,6 @@ message CreateUserRequest {
   string name = 1;
   string email = 2;
   string password = 3;
-  string phone = 4;
-  UserLocation location = 5;
 }
 
 message CreateUserResponse {
@@ -64,7 +63,7 @@ message UpdateUserRequest {
   string email = 3;
   string password = 4;
   string phone = 5;
-  UserLocation location = 6;
+  UserLocation location = 7;
 }
 
 message UpdateUserResponse {
