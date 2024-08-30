@@ -9,15 +9,19 @@ namespace AuthService.Services
         private readonly ILogger<AuthServiceImpl> _logger;
         private readonly ITokenCacheService _cacheService;
         private readonly ITokenService _tokenService;
+        private readonly IEmailService _emailService;
 
         public AuthServiceImpl(
             ILogger<AuthServiceImpl> logger,
             ITokenCacheService cacheService,
-            ITokenService tokenService)
+            ITokenService tokenService,
+            IEmailService emailService
+            )
         {
             _logger = logger;
             _cacheService = cacheService;
             _tokenService = tokenService;
+            _emailService = emailService;
         }
 
         public override async Task<CreateTokensResponse> CreateTokens(CreateTokensRequest request, ServerCallContext context)
@@ -72,8 +76,24 @@ namespace AuthService.Services
             return verifyResponse;
         }
 
+
+        public override async Task<SendPasswordResetLinkResponse> SendPasswordResetLink(SendPasswordResetLinkRequest request, ServerCallContext context)
+        {
+            // TODO Generate Token
+
+            var token = "ijq9ef8nf34nNFhf09FJJF0jf23jf";
+
+            var success = await _emailService.SendEmailAsync(request.Email, "Reset password in CommerceFlow", token);
+
+            return new()
+            {
+                Success = success
+            };
+        }
+
         public string IssueAccessToken(int userId, string userRole)
         {
+            _emailService.SendEmailAsync("toEmail", "subject", "body"); // delete this line after implementing the email service !!!!!!!!!!!!!!!!!!!!!
             return _tokenService.CreateAccessToken(userId, userRole);
         }
 

@@ -6,12 +6,14 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace AuthService.Infrastructure.Services
 {
     public class TokenService : ITokenService
     {
         private readonly IOptions<JwtOptions> _jwtOptions;
+
         public TokenService(
             IOptions<JwtOptions> jwtOptions
             )

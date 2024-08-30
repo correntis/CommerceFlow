@@ -7,14 +7,23 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
-services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
+configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
+Console.WriteLine(builder.Environment.EnvironmentName);
+
+services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
+services.Configure<EmailOptions>(configuration.GetSection(nameof(EmailOptions)));
 
 services.AddGrpc();
 services.AddLogging(builder => { builder.AddConsole(); });
 
 services.AddScoped<ITokenCacheService, TokenCacheService>();
 services.AddScoped<ITokenService, TokenService>();
+services.AddScoped<IEmailService, EmailService>();
 
 services.AddStackExchangeRedisCache(options =>
 {

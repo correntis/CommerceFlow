@@ -18,8 +18,10 @@ namespace AuthService.Tests
         private readonly AuthServiceImpl _authService;
         private readonly IConfiguration _configuration;
         private readonly IOptions<JwtOptions> _jwtOptions;
+        private readonly IOptions<EmailOptions> _emailOptions;
         private readonly ITokenService _tokenService;
         private readonly ITokenCacheService _cacheService;
+        private readonly IEmailService _emailService;
         private readonly Mock<IDistributedCache> _mockCache;
         private readonly Mock<ILogger<AuthServiceImpl>> _mockLogger;
 
@@ -32,15 +34,18 @@ namespace AuthService.Tests
 
             var serviceCollection = new ServiceCollection();
             serviceCollection.Configure<JwtOptions>(_configuration.GetSection("JwtOptions"));
+            serviceCollection.Configure<EmailOptions>(_configuration.GetSection("EmailOptions"));
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             _jwtOptions = serviceProvider.GetRequiredService<IOptions<JwtOptions>>();
+            _emailOptions = serviceProvider.GetRequiredService<IOptions<EmailOptions>>();
 
+            _emailService = new EmailService(_emailOptions);
             _mockCache = new Mock<IDistributedCache>();
             _mockLogger = new Mock<ILogger<AuthServiceImpl>>();
             _cacheService = new TokenCacheService(_mockCache.Object);
             _tokenService = new TokenService(_jwtOptions);
-            _authService = new AuthServiceImpl(_mockLogger.Object, _cacheService, _tokenService);
+            _authService = new AuthServiceImpl(_mockLogger.Object, _cacheService, _tokenService, _emailService);
         }
 
         [Fact]
