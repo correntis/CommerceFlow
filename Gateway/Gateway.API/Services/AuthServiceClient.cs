@@ -18,8 +18,6 @@ namespace Gateway.API.Services
 
         public async Task<CreateTokensResponse> CreateTokensAsync(int userId, string userRole)
         {
-            _logger.LogInformation("Method - CreateTokens - {Time} - {Address}", DateTime.Now, address);
-
             using var channel = GrpcChannel.ForAddress(address);
             var client = new AuthService.AuthServiceClient(channel);
 
@@ -36,8 +34,6 @@ namespace Gateway.API.Services
 
         public async Task<VerifyResponse> VerifyAsync(string refreshToken, string userRole)
         {
-            _logger.LogInformation("Method - Verify - {Time}", DateTime.Now);
-
             using var channel = GrpcChannel.ForAddress(address);
             var client = new AuthService.AuthServiceClient(channel);
 
@@ -51,5 +47,21 @@ namespace Gateway.API.Services
 
             return response;
         }
+
+        public async Task<SendPasswordResetLinkResponse> SendResetPasswordLink(string email)
+        {
+            using var channel = GrpcChannel.ForAddress(address);
+            var client = new AuthService.AuthServiceClient(channel);
+
+            var request = new SendPasswordResetLinkRequest
+            {
+                Email = email
+            };
+
+            var response = await client.SendPasswordResetLinkAsync(request);
+
+            return response;
+        }
+
     }
 }

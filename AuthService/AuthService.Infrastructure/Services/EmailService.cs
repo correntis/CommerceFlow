@@ -1,13 +1,8 @@
 ﻿using AuthService.Infrastructure.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Mail;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using AuthService.Infrastructure.Abstractions;
 
 namespace AuthService.Infrastructure.Services
@@ -15,12 +10,15 @@ namespace AuthService.Infrastructure.Services
     public class EmailService : IEmailService
     {
         private readonly IOptions<EmailOptions> _options;
+        private readonly ILogger<EmailService> _logger;
 
         public EmailService(
-            IOptions<EmailOptions> options
+            IOptions<EmailOptions> options,
+            ILogger<EmailService> logger
             )
         {
             _options = options;
+            _logger = logger;
         }
 
         public async Task<bool> SendEmailAsync(string toEmail, string subject, string body)
@@ -41,7 +39,7 @@ namespace AuthService.Infrastructure.Services
 
                 var mailMessage = new MailMessage
                 {
-                    From = new MailAddress(_options.Value.SenderName, _options.Value.SenderName),
+                    From = new MailAddress(username, _options.Value.SenderName),
                     Subject = subject,
                     Body = body,
                     IsBodyHtml = true
@@ -53,9 +51,9 @@ namespace AuthService.Infrastructure.Services
 
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
-
+                _logger.LogError(ex.ToString());
                 return false;
             }
         }

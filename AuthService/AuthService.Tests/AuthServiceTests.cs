@@ -24,6 +24,7 @@ namespace AuthService.Tests
         private readonly IEmailService _emailService;
         private readonly Mock<IDistributedCache> _mockCache;
         private readonly Mock<ILogger<AuthServiceImpl>> _mockLogger;
+        private readonly Mock<ILogger<EmailService>> _emailLogger;
 
 
         public AuthServiceTests()
@@ -40,7 +41,9 @@ namespace AuthService.Tests
             _jwtOptions = serviceProvider.GetRequiredService<IOptions<JwtOptions>>();
             _emailOptions = serviceProvider.GetRequiredService<IOptions<EmailOptions>>();
 
-            _emailService = new EmailService(_emailOptions);
+
+            _emailLogger = new Mock<ILogger<EmailService>>();
+            _emailService = new EmailService(_emailOptions, _emailLogger.Object);
             _mockCache = new Mock<IDistributedCache>();
             _mockLogger = new Mock<ILogger<AuthServiceImpl>>();
             _cacheService = new TokenCacheService(_mockCache.Object);
