@@ -71,8 +71,8 @@ namespace Gateway.API.Controllers
             return Ok(authResult.Value);
         }
 
-        [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        [HttpPost("email")]
+        public async Task<IActionResult> SendEmail([FromBody] SendEmailRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -87,6 +87,28 @@ namespace Gateway.API.Controllers
             }
 
             return StatusCode(500, "Internal Server Error");
+        }
+
+        [HttpPatch("password")]
+        public async Task<IActionResult> ResetPassword(
+            [FromQuery] ResetPasswordRequest request
+            )
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(); 
+            }
+
+            var response = await _authService.VerifyPasswordReset(request.Token);
+
+            if (!response.Success)
+            {
+                return NotFound();   
+            }
+
+            // TODO Update user password
+
+            return Ok();
         }
 
         private void AppendCookies(CreateTokensResponse response)

@@ -63,5 +63,19 @@ namespace Gateway.API.Services
             return response;
         }
 
+        public async Task<VerifyPasswordResetResponse> VerifyPasswordReset(string token)
+        {
+            using var channel = GrpcChannel.ForAddress(address);
+            var client = new AuthService.AuthServiceClient(channel);
+
+            var request = new VerifyPasswordResetRequest
+            {
+                Token = token
+            };
+
+            var response = await client.VerifyPasswordResetAsync(request);
+
+            return response;
+        }
     }
 }

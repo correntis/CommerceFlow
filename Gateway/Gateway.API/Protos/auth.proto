@@ -6,8 +6,9 @@ package greet;
 
 service AuthService {
   rpc CreateTokens (CreateTokensRequest) returns (CreateTokensResponse);
-  rpc Verify (VerifyRequest) returns (VerifyResponse);
   rpc SendPasswordResetLink (SendPasswordResetLinkRequest) returns (SendPasswordResetLinkResponse);
+  rpc Verify (VerifyRequest) returns (VerifyResponse);
+  rpc VerifyPasswordReset (VerifyPasswordResetRequest) returns (VerifyPasswordResetResponse);
 }
 
 message CreateTokensRequest{
@@ -37,5 +38,13 @@ message SendPasswordResetLinkRequest{
 }
 
 message SendPasswordResetLinkResponse{
+	bool success = 1;
+}
+
+message VerifyPasswordResetRequest{
+	string token = 1;
+}
+
+message VerifyPasswordResetResponse{
 	bool success = 1;
 }

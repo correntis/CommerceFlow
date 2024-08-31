@@ -5,6 +5,6 @@
         Task<CreateTokensResponse> CreateTokensAsync(int userId, string userRole);
         Task<VerifyResponse> VerifyAsync(string refreshToken, string userRole);
         Task<SendPasswordResetLinkResponse> SendResetPasswordLink(string email);
-
+        Task<VerifyPasswordResetResponse> VerifyPasswordReset(string token);
     }
 }
