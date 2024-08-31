@@ -79,11 +79,18 @@ namespace AuthService.Services
 
         public override async Task<SendPasswordResetLinkResponse> SendPasswordResetLink(SendPasswordResetLinkRequest request, ServerCallContext context)
         {
-            // TODO Generate Token
+            var token = _tokenService.CreateResetPasswordToken();
 
-            var token = "ijq9ef8nf34nNFhf09FJJF0jf23jf";
+            //TODO Change to frontend Reset Password Page
+            //var passwordResetLink = $"http://localhost:3000/reset-password?Email={request.Email}&Token={token}";
 
-            var success = await _emailService.SendEmailAsync(request.Email, "Reset password in CommerceFlow", token);
+            var success = await _emailService.SendEmailAsync(
+                request.Email,
+                "Reset password in CommerceFlow", 
+                $"Reset your password with token {token}</a>."
+            );
+
+            await _cacheService.SetTokenAsync(token, request.Email, DateTime.UtcNow.AddMinutes(10));
 
             return new()
             {
@@ -91,9 +98,23 @@ namespace AuthService.Services
             };
         }
 
+        public override async Task<VerifyPasswordResetResponse> VerifyPasswordReset(VerifyPasswordResetRequest request, ServerCallContext context)
+        {
+            var success = await _cacheService.ContainsAsync(request.Token);
+
+            if(success)
+            {
+                await RemoveTokenFromCacheAsync(request.Token);
+            }
+
+            return new VerifyPasswordResetResponse
+            {
+                Success = success
+            };
+        }
+
         public string IssueAccessToken(int userId, string userRole)
         {
-            _emailService.SendEmailAsync("toEmail", "subject", "body"); // delete this line after implementing the email service !!!!!!!!!!!!!!!!!!!!!
             return _tokenService.CreateAccessToken(userId, userRole);
         }
 
@@ -103,7 +124,7 @@ namespace AuthService.Services
 
             var refreshToken = _tokenService.CreateRefreshToken();
 
-            await _cacheService.SetTokenAsync(refreshToken, userId.ToString());
+            await _cacheService.SetTokenAsync(refreshToken, userId.ToString(), DateTime.UtcNow.AddMonths(1));
 
             return refreshToken;
         }

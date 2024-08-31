@@ -12,10 +12,10 @@ namespace AuthService.Infrastructure.Services
             _cache = cache;
         }
 
-        public async Task SetTokenAsync(string token, string userId)
+        public async Task SetTokenAsync(string token, string userId, DateTimeOffset duration)
         {
             var options = new DistributedCacheEntryOptions()
-                .SetAbsoluteExpiration(DateTime.Now.AddMonths(1));
+                .SetAbsoluteExpiration(duration);
 
             await _cache.SetStringAsync(token, userId.ToString(), options);
         }
@@ -30,6 +30,13 @@ namespace AuthService.Infrastructure.Services
             var userId = await _cache.GetStringAsync(token);
 
             return userId;
+        }
+
+        public async Task<bool> ContainsAsync(string token)
+        {
+            var email = await _cache.GetStringAsync(token);
+
+            return email != null;
         }
     }
 }

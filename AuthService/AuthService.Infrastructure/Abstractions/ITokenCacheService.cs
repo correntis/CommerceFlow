@@ -4,6 +4,7 @@
     {
         Task<string> GetUserIdAsync(string token);
         Task RemoveTokenAsync(string oldToken);
-        Task SetTokenAsync(string token, string userId);
+        Task SetTokenAsync(string token, string userId, DateTimeOffset duration);
+        Task<bool> ContainsAsync(string token);
     }
 }

@@ -4,5 +4,6 @@
     {
         string CreateAccessToken(int userId, string userRole);
         string CreateRefreshToken();
+        string CreateResetPasswordToken();
     }
 }
