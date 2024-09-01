@@ -32,6 +32,8 @@ CommerceFlow is a simple and modular e-commerce system built using ASP.NET Core 
 <!-- GETTING STARTED -->
 ## Getting Started
 
+### Default running
+
 The entire project runs through Docker, so all you need to do is:
 
 1. Clone the project to your computer using the command:
@@ -50,6 +52,26 @@ The entire project runs through Docker, so all you need to do is:
    ```
    http://localhost:5000/swagger/index.html
    ```
+
+### Running with metrics
+
+To running application using Prometheus and Grafana, follow these steps:
+
+1. Use the following command to build and run the services with metrics enabled:
+   ```
+   docker-compose -f docker-compose-metrics.yaml up --build
+   ```
+2. Access the Grafana dashboard by navigating to:
+   ```
+   http://localhost:3000
+   ```
+3. Log in to Grafana with the default credentials:
+   ```
+   Username: admin
+   Password: admin
+   ```
+4. Create a dashboard based on the default data source "prometheus".
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
