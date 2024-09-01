@@ -101,12 +101,12 @@ namespace Gateway.API.Controllers
 
             var response = await _authService.VerifyPasswordReset(request.Token);
 
-            if (!response.Success)
+            if(!response.Success)
             {
-                return NotFound();   
+                return NotFound();
             }
 
-            // TODO Update user password
+            var updateResponse = await _usersService.UpdatePasswordAsync(request.Email, request.Password);
 
             return Ok();
         }

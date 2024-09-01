@@ -4,11 +4,11 @@ option csharp_namespace = "Gateway";
 
 package greet;
 
-
 service UsersService {
   rpc Authenticate (AuthenticateRequest) returns (AuthenticateResponse);
   rpc Create (CreateUserRequest) returns (CreateUserResponse);
   rpc Update (UpdateUserRequest) returns (UpdateUserResponse);
+  rpc UpdatePassword (UpdatePasswordRequest) returns (UpdatePasswordResponse);
   rpc Delete (DeleteUserRequest) returns (DeleteUserResponse);
   rpc Get (GetUserRequest) returns (GetUserResponse);
   rpc GetAll (Empty) returns (UsersResponse);
@@ -74,6 +74,15 @@ message UpdateUserResponse {
   }
 }
 
+message UpdatePasswordRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message UpdatePasswordResponse {
+	bool is_success = 1;
+}
+
 message DeleteUserRequest {
   int32 id = 1;
 }
@@ -101,4 +110,3 @@ message Empty { }
 message UsersResponse{
 	repeated UserResponse users = 1;
 }
-

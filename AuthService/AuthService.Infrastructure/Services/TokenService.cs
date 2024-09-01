@@ -33,7 +33,7 @@ namespace AuthService.Infrastructure.Services
                 new(JwtRegisteredClaimNames.Sub, userId.ToString())
             };
 
-            var expiresTime = DateTime.UtcNow.AddSeconds(30);
+            var expiresTime = DateTime.UtcNow.AddDays(3);
 
             var token = new JwtSecurityToken(
                 issuer: _jwtOptions.Value.Issuer,

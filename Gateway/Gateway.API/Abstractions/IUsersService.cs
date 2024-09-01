@@ -12,5 +12,6 @@ namespace Gateway.API.Abstractions
         Task<List<UserResponse>> GetAllAsync();
         Task<Result<UserResponse, Error>> GetAsync(int userId);
         Task<Result<bool, Error>> UpdateAsync(int userId, UserDto userRequest);
+        Task<bool> UpdatePasswordAsync(string email, string password);
     }
 }

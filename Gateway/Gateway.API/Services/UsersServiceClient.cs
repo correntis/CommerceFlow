@@ -95,6 +95,22 @@ namespace Gateway.API.Services
             return response.IsSuccess;
         }
 
+        public async Task<bool> UpdatePasswordAsync(string email, string password)
+        {
+            using var channel = GrpcChannel.ForAddress(address);
+            var usersService = new UsersService.UsersServiceClient(channel);
+
+            var request = new UpdatePasswordRequest()
+            {
+                Email = email,
+                Password = password
+            };
+
+            var response = await usersService.UpdatePasswordAsync(request);
+
+            return response.IsSuccess;
+        }
+
         public async Task<Result<bool, Error>> DeleteAsync(int userId)
         {
             using var channel = GrpcChannel.ForAddress(address);
