@@ -1,0 +1,116 @@
+version: "3.8"
+
+services:
+  redis-tokens:
+    container_name: redis-tokens
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - commerceflow
+
+  auth-service:
+    container_name: auth-service
+    build:
+      context: ./AuthService
+      dockerfile: AuthService.API/Dockerfile
+    environment:
+      - STORAGE_HOST=redis-tokens
+      - STORAGE_PORT=6379
+      - JWT_SECRET=jwt_secret
+      - ASPNETCORE_ENVIRONMENT=Development # Delete this line before build 
+    depends_on:
+      - redis-tokens
+    ports:
+      - "5001:8080"
+    networks:
+      - commerceflow
+
+  gateway:
+    container_name: gateway
+    build:
+      context: ./Gateway/Gateway.API
+      dockerfile: Dockerfile
+    environment:
+      - AUTH_HOST=auth-service
+      - AUTH_PORT=8080
+      - USERS_HOST=users-service
+      - USERS_PORT=8080
+    depends_on:
+      - auth-service
+      - users-service
+    ports:
+      - "5000:8080"
+    networks:
+      - commerceflow
+
+  users-service:
+    container_name: users-service
+    build:
+      context: ./
+      dockerfile: ./UsersService/UsersService.API/Dockerfile
+    environment:
+      POSTGRES_DB: "commercedb"
+      POSTGRES_USER: "postgres"
+      POSTGRES_HOST: "commerce-storage"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_PORT: "5432"
+    depends_on:
+      - commerce-storage
+    ports:
+      - "5002:8080"
+    networks:
+      - commerceflow
+
+  # migrations:
+  #   build:
+  #     context: ./
+  #     dockerfile: CommerceFlow.Persistence/Dockerfile.migrate
+  #   environment:
+  #     POSTGRES_DB: "commercedb"
+  #     POSTGRES_USER: "postgres"
+  #     POSTGRES_HOST: "commerce-storage"
+  #     POSTGRES_PASSWORD: "password"
+  #     POSTGRES_PORT: "5432"
+  #   depends_on:
+  #     - commerce-storage
+  #   networks:
+  #     - commerceflow
+
+
+  commerce-storage:
+    container_name: commerce-storage
+    image: postgres:17beta2-alpine3.20
+    environment:
+      POSTGRES_DB: "commercedb"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "password"
+    ports:
+      - "5432:5432"
+    networks:
+      - commerceflow
+  
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - gateway
+    networks:
+      - commerceflow
+  
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    ports: 
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - commerceflow
+
+networks:
+  commerceflow:

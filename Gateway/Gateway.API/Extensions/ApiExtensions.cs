@@ -3,7 +3,11 @@ using Gateway.API.Abstractions;
 using Gateway.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.NetworkInformation;
 using System.Security.Claims;
 using System.Text;
 
@@ -16,6 +20,21 @@ namespace Gateway.Extensions
             IConfiguration configuration)
         {
             services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
+        }
+
+        public static void AddApplicationMetrics(
+            this IServiceCollection services
+            )
+        {
+            services.AddOpenTelemetry()
+                .ConfigureResource(resourse => resourse.AddService("Commerce Flow"))
+                .WithMetrics(metrics =>
+                {
+                    metrics
+                        .AddAspNetCoreInstrumentation()
+                        .AddRuntimeInstrumentation()
+                        .AddPrometheusExporter();
+                });
         }
 
         public static void AddGatewayCookieAuthentication(

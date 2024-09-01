@@ -2,13 +2,13 @@ using Gateway.Abstractions;
 using Gateway.API.Abstractions;
 using Gateway.API.Services;
 using Gateway.Extensions;
-using Gateway.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
 services.AddOptions();
+services.AddApplicationMetrics();
 
 services.AddControllers();
 services.AddProblemDetails();
@@ -28,10 +28,11 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.MapControllers();
