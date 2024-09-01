@@ -40,68 +40,69 @@ namespace CommerceFlow.Persistence.Repositories
         public async Task<int> UpdateAsync(User user)
         {
             var entity = await _context.Users
-                .FindAsync(user.Id);
+                .Include(u => u.Location)
+                .FirstOrDefaultAsync(u => u.Id == user.Id);
 
             if (entity is null)
             {
                 return 0;
             }
 
-            await _context.Entry(entity)
-                    .Reference(x => x.Location)
-                    .LoadAsync();
-
             entity.Name = user.Name;
             entity.Email = user.Email;
             entity.Phone = user.Phone;
-            entity.HashPassword = user.HashPassword;
 
             entity.Location.Address = user.Location.Address;
             entity.Location.City = user.Location.City;
 
             var rowsAffected = await _context.SaveChangesAsync();
 
-            return rowsAffected == 0 ? 1 : rowsAffected;
+            return rowsAffected;
         }
+
+        public async Task<int> UpdatePasswordAsync(string email, string hashPassword)
+        {
+            var entity = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == email);
+
+            if(entity is null)
+            {
+                return 0;
+            }
+
+            entity.HashPassword = hashPassword;
+
+            var rowsAffected = await _context.SaveChangesAsync();
+
+            return rowsAffected;
+        }
+
+
         public async Task<int> DeleteAsync(int id)
         {
-            var entity = await _context.Users.FindAsync(id);
+            var entity = await _context.Users
+                .Include(u => u.Location)
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Id == id);
 
             if (entity is null)
             {
                 return 0;
             }
 
-            await _context.Entry(entity)
-                .Reference(x => x.Location)
-                .LoadAsync();
-            await _context.Entry(entity)
-                .Reference(x => x.Role)
-                .LoadAsync();
-
             _context.Users.Remove(entity);
 
             var rowsAffected = await _context.SaveChangesAsync();
 
-            return rowsAffected == 0 ? 1 : rowsAffected;
+            return rowsAffected;
         }
 
         public async Task<User> GetAsync(int id)
         {
-            var entity = await _context.Users.FindAsync(id);
-
-            if (entity is null)
-            {
-                return null;
-            }
-
-            await _context.Entry(entity)
-                .Reference(x => x.Location)
-                .LoadAsync();
-
-            await _context.Entry(entity)
-                .Reference(x => x.Role)
-                .LoadAsync();
+            var entity = await _context.Users
+                .Include(u => u.Location)
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Id == id);
 
             return entity;
         }
@@ -119,20 +120,10 @@ namespace CommerceFlow.Persistence.Repositories
 
         public async Task<User> GetByEmailAsync(string email)
         {
-            var entity = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
-
-            if (entity is null)
-            {
-                return null;
-            }
-
-            await _context.Entry(entity)
-                .Reference(x => x.Location)
-                .LoadAsync();
-
-            await _context.Entry(entity)
-                .Reference(x => x.Role)
-                .LoadAsync();
+            var entity = await _context.Users
+                .Include(u => u.Location)
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(x => x.Email == email);
 
             return entity;
         }

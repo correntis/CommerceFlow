@@ -129,6 +129,18 @@ namespace UsersService.Services
             return new() { IsSuccess = Convert.ToBoolean(rowsAffected) };
         }
 
+        public override async Task<UpdatePasswordResponse> UpdatePassword(UpdatePasswordRequest request, ServerCallContext context)
+        {
+            var hashPassword = _passwordHasher.Hash(request.Password);
+
+            var rowsAffected = await _usersRepository.UpdatePasswordAsync(request.Email, hashPassword);
+
+            return new UpdatePasswordResponse()
+            {
+                IsSuccess = Convert.ToBoolean(rowsAffected)
+            };
+        }
+
         public override async Task<GetUserResponse> Get(GetUserRequest request, ServerCallContext context)
         {
             var user = await _usersRepository.GetAsync(request.Id);
