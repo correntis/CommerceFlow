@@ -22,7 +22,7 @@ CommerceFlow is a simple and modular e-commerce system built using ASP.NET Core 
 
 ### Built With
 
-[![My Skills](https://skillicons.dev/icons?i=cs,net,docker,postgres,redis,rabbitmq,js,ts,react)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=cs,net,docker,postgres,redis,rabbitmq,js,ts,react,grafana,prometheus)](https://skillicons.dev)
 
 </p>
 
@@ -61,16 +61,20 @@ To running application using Prometheus and Grafana, follow these steps:
    ```
    docker-compose -f docker-compose-metrics.yaml up --build
    ```
-2. Access the Grafana dashboard by navigating to:
+2. View the Elasticsearch logs by following the link
+   ```
+   http://localhost:5601
+   ```
+3. Access the Grafana dashboard by navigating to:
    ```
    http://localhost:3000
    ```
-3. Log in to Grafana with the default credentials:
+4. Log in to Grafana with the default credentials:
    ```
    Username: admin
    Password: admin
    ```
-4. Create a dashboard based on the default data source "prometheus".
+5. Create a dashboard based on the default data source "prometheus".
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
