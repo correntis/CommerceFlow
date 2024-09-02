@@ -1,15 +1,18 @@
-﻿using Gateway.Abstractions;
-using Gateway.API.Abstractions;
+﻿using Gateway.API.Abstractions;
 using Gateway.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net.NetworkInformation;
-using System.Security.Claims;
+using Serilog;
+using System.Reflection;
 using System.Text;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Serilog.Sinks.Elasticsearch;
+using Gateway.API.Infrastructure;
+
 
 namespace Gateway.Extensions
 {
@@ -20,6 +23,37 @@ namespace Gateway.Extensions
             IConfiguration configuration)
         {
             services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
+        }
+
+        public static void AddElastic(
+            this IServiceCollection services,
+            WebApplicationBuilder builder,
+            IConfiguration configuration
+            )
+        {
+            var environment = builder.Environment.EnvironmentName;
+
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .Enrich.WithMachineName()
+                .WriteTo.Debug()
+                .WriteTo.Console()
+                .WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment))
+                .Enrich.WithProperty("Environment", environment)
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
+        }
+
+        private static ElasticsearchSinkOptions ConfigureElasticSink(IConfiguration configuration, string environment)
+        {
+            return new ElasticsearchSinkOptions(new Uri(configuration["ElasticOptions:Url"]))
+            {
+                AutoRegisterTemplate = true,
+                IndexFormat = 
+                       $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}" +
+                       $"-{environment?.ToLower().Replace(".", "-")}" +
+                       $"-{DateTime.UtcNow:yyyy-MM}"
+            };
         }
 
         public static void AddApplicationMetrics(

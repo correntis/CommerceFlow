@@ -62,20 +62,20 @@ services:
     networks:
       - commerceflow
 
-  # migrations:
-  #   build:
-  #     context: ./
-  #     dockerfile: CommerceFlow.Persistence/Dockerfile.migrate
-  #   environment:
-  #     POSTGRES_DB: "commercedb"
-  #     POSTGRES_USER: "postgres"
-  #     POSTGRES_HOST: "commerce-storage"
-  #     POSTGRES_PASSWORD: "password"
-  #     POSTGRES_PORT: "5432"
-  #   depends_on:
-  #     - commerce-storage
-  #   networks:
-  #     - commerceflow
+  migrations:
+    build:
+      context: ./
+      dockerfile: CommerceFlow.Persistence/Dockerfile.migrate
+    environment:
+      POSTGRES_DB: "commercedb"
+      POSTGRES_USER: "postgres"
+      POSTGRES_HOST: "commerce-storage"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_PORT: "5432"
+    depends_on:
+      - commerce-storage
+    networks:
+      - commerceflow
 
 
   commerce-storage:
@@ -111,6 +111,31 @@ services:
       - "3000:3000"
     depends_on:
       - prometheus
+    networks:
+      - commerceflow
+
+  elastic:
+    container_name: elastic
+    image: elasticsearch:8.14.3
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xms512m
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - commerceflow
+
+  kibana:
+    container_name: kibana
+    image: kibana:8.14.3
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elastic:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elastic
     networks:
       - commerceflow
 

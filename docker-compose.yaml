@@ -62,20 +62,20 @@ services:
     networks:
       - commerceflow
 
-  # migrations:
-  #   build:
-  #     context: ./
-  #     dockerfile: CommerceFlow.Persistence/Dockerfile.migrate
-  #   environment:
-  #     POSTGRES_DB: "commercedb"
-  #     POSTGRES_USER: "postgres"
-  #     POSTGRES_HOST: "commerce-storage"
-  #     POSTGRES_PASSWORD: "password"
-  #     POSTGRES_PORT: "5432"
-  #   depends_on:
-  #     - commerce-storage
-  #   networks:
-  #     - commerceflow
+  migrations:
+    build:
+      context: ./
+      dockerfile: CommerceFlow.Persistence/Dockerfile.migrate
+    environment:
+      POSTGRES_DB: "commercedb"
+      POSTGRES_USER: "postgres"
+      POSTGRES_HOST: "commerce-storage"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_PORT: "5432"
+    depends_on:
+      - commerce-storage
+    networks:
+      - commerceflow
 
 
   commerce-storage:

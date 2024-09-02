@@ -1,9 +1,6 @@
 ﻿using Gateway.Abstractions;
 using Gateway.API.Contracts.Authentication;
-using Gateway.API.Contracts;
-using Gateway.API.Services;
 using Microsoft.AspNetCore.Mvc;
-using Gateway.API.Contracts.Users;
 using Gateway.API.Infrastructure;
 using Gateway.API.Abstractions;
 

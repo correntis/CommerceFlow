@@ -53,6 +53,8 @@ namespace Gateway.API.Controllers
                 return BadRequest(ModelState);
             }
 
+            // TODO: Implement role update
+
             return Ok($"User role updated" + id);
         }
 
@@ -66,6 +68,8 @@ namespace Gateway.API.Controllers
             {
                 return StatusCode(result.Error.Code, result.Error.Message);
             }
+
+            
 
             return Ok($"User deleted");
         }
