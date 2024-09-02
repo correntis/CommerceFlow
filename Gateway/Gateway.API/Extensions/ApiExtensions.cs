@@ -38,22 +38,17 @@ namespace Gateway.Extensions
                 .Enrich.WithMachineName()
                 .WriteTo.Debug()
                 .WriteTo.Console()
-                .WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment))
                 .Enrich.WithProperty("Environment", environment)
                 .ReadFrom.Configuration(configuration)
-                .CreateLogger();
-        }
-
-        private static ElasticsearchSinkOptions ConfigureElasticSink(IConfiguration configuration, string environment)
-        {
-            return new ElasticsearchSinkOptions(new Uri(configuration["ElasticOptions:Url"]))
-            {
-                AutoRegisterTemplate = true,
-                IndexFormat = 
+                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(configuration["ElasticOptions:Url"]))
+                {
+                    AutoRegisterTemplate = true,
+                    IndexFormat =
                        $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}" +
                        $"-{environment?.ToLower().Replace(".", "-")}" +
                        $"-{DateTime.UtcNow:yyyy-MM}"
-            };
+                })
+                .CreateLogger();
         }
 
         public static void AddApplicationMetrics(
