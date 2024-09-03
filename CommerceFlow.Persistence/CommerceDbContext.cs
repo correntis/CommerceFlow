@@ -9,6 +9,8 @@ namespace CommerceFlow.Persistence
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Product> Products { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -16,6 +18,8 @@ namespace CommerceFlow.Persistence
 
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new LocationConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductConfiguration());
+            modelBuilder.ApplyConfiguration(new CategoryConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

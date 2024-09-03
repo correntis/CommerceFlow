@@ -11,8 +11,6 @@ namespace CommerceFlow.Persistence.Configuration
             builder.ToTable("Roles");
 
             builder.HasKey(x => x.Id);
-
-
         }
     }
 }
