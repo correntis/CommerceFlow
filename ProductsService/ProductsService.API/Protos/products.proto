@@ -1,0 +1,136 @@
+syntax = "proto3";
+
+option csharp_namespace = "ProductsService";
+
+package greet;
+
+service ProductsService {
+  rpc CreateProduct (CreateProductRequest) returns (CreateProductResponse);
+  rpc UpdateProduct (UpdateProductRequest) returns (UpdateProductResponse);
+  rpc DeleteProduct (DeleteProductRequest) returns (DeleteProductResponse);
+  rpc GetProduct (GetProductRequest) returns (GetProductResponse);
+  rpc GetAllProducts (Empty) returns (ProductsList);
+
+  rpc CreateCategory (CreateCategoryRequest) returns (CreateCategoryResponse);
+  rpc UpdateCategory (UpdateCategoryRequest) returns (UpdateCategoryResponse);
+  rpc DeleteCategory (DeleteCategoryRequest) returns (DeleteCategoryResponse);
+  rpc GetCategory (GetCategoryRequest) returns (GetCategoryResponse);
+  rpc GetAllCategories (Empty) returns (CategoriesList);
+}
+
+message Empty {}
+
+message ProductsServiceException {
+	string message = 1;
+}
+
+message Category {
+	string name = 1;
+	string description = 2;
+}
+
+message Product {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+  int32 price = 4;
+  int32 stock = 5;
+  repeated Category categories = 6;
+}
+
+message ProductsList {
+	repeated Product products = 1;
+}
+
+message CategoriesList {
+	repeated Category categories = 1;
+}
+
+
+message CreateProductRequest {
+  Product product = 1;
+}
+
+message CreateProductResponse {
+  oneof response {
+	ProductsServiceException error = 1;
+	int32 id = 2;
+  }
+}
+
+message UpdateProductRequest {
+  Product product = 1;
+}
+
+message UpdateProductResponse {
+  oneof response {
+	ProductsServiceException error = 1;
+	bool success = 2;
+  }
+}
+
+message DeleteProductRequest {
+  int32 id = 1;
+}
+
+message DeleteProductResponse {
+  oneof response {
+	ProductsServiceException error = 1;
+	bool success = 2;
+  }
+}
+
+message GetProductRequest {
+  int32 id = 1;
+}
+
+message GetProductResponse {
+  oneof response {
+	ProductsServiceException error = 1;
+	Product product = 2;
+  }
+}
+
+message CreateCategoryRequest {
+  Category category = 1;
+}
+
+message CreateCategoryResponse {
+  oneof response {
+	ProductsServiceException error = 1;
+	int32 id = 2;
+  }
+}
+
+message UpdateCategoryRequest {
+  Category category = 1;
+}
+
+message UpdateCategoryResponse {
+  oneof response {
+	ProductsServiceException error = 1;
+	bool success = 2;
+  }
+}
+
+message DeleteCategoryRequest {
+  int32 id = 1;
+}
+
+message DeleteCategoryResponse {
+  oneof response {
+	ProductsServiceException error = 1;
+	bool success = 2;
+  }
+}
+
+message GetCategoryRequest {
+  int32 id = 1;
+}
+
+message GetCategoryResponse {
+  oneof response {
+	ProductsServiceException error = 1;
+	Category category = 2;
+  }
+}
