@@ -2,6 +2,7 @@
 using CommerceFlow.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,15 +14,15 @@ namespace CommerceFlow.Persistence.Repositories
     public class CategoriesRepository : ICategoriesRepository
     {
         private readonly CommerceDbContext _context;
-        private readonly IConfiguration _configuration;
+        private readonly ILogger<CategoriesRepository> _logger;
 
         public CategoriesRepository(
             CommerceDbContext context,
-            IConfiguration configuration
+            ILogger<CategoriesRepository> logger
             )
         {
             _context = context;
-            _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task<int> AddAsync(Category category)
@@ -72,6 +73,7 @@ namespace CommerceFlow.Persistence.Repositories
         {
             var entity = await _context.Categories
                 .Include(c => c.Products)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             return entity;
@@ -80,7 +82,7 @@ namespace CommerceFlow.Persistence.Repositories
         public async Task<IEnumerable<Category>> GetAllAsync()
         {
             return await _context.Categories
-                .Include(c => c.Products)
+                .AsNoTracking()
                 .ToListAsync();
         }
     }

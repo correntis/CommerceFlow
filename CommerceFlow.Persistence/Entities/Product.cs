@@ -14,6 +14,6 @@ namespace CommerceFlow.Persistence.Entities
         public decimal Price { get; set; }
         public int Stock { get; set; }
 
-        public IList<Category> Categories { get; set; } = [];
+        public List<Category> Categories { get; set; } = [];
     }
 }
