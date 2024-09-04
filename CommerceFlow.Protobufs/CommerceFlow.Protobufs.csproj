@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Users\users_service_client.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.28.0" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.65.0" />
     <PackageReference Include="Grpc.Net.Client" Version="2.65.0" />
@@ -17,9 +21,20 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<Protobuf Include="Products\products_service.proto" GrpcServices="Server" />
+		<Protobuf Include="Products\products_service_server.proto" GrpcServices="Server" />
+		<Protobuf Include="Products\products_service_client.proto" GrpcServices="Client" />
 		<Protobuf Include="Products\products.proto" GrpcServices="None" />
 		<Protobuf Include="Products\categories.proto" GrpcServices="None" />
+
+		<Protobuf Include="Users\users_service_client.proto" GrpcServices="Client" />
+		<Protobuf Include="Users\users_service_server.proto" GrpcServices="Server" />
+		<Protobuf Include="Users\users.proto" GrpcServices="None" />
+
+		<Protobuf Include="Authentication\auth_service_server.proto" GrpcServices="Server" />
+		<Protobuf Include="Authentication\auth_service_client.proto" GrpcServices="Client" />
+		<Protobuf Include="Authentication\auth.proto" GrpcServices="None" />
+
 		<Protobuf Include="empty.proto" GrpcServices="None" />
+		<Protobuf Include="error.proto" GrpcServices="None" />
 	</ItemGroup>
 </Project>

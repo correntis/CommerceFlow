@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option csharp_namespace = "CommerceFlow.Protobufs.Client";
+
+import "Authentication/auth.proto";
+
+service AuthService {
+  rpc CreateTokens (CreateTokensRequest) returns (CreateTokensResponse);
+  rpc SendPasswordResetLink (SendPasswordResetLinkRequest) returns (SendPasswordResetLinkResponse);
+  rpc Verify (VerifyRequest) returns (VerifyResponse);
+  rpc VerifyPasswordReset (VerifyPasswordResetRequest) returns (VerifyPasswordResetResponse);
+}

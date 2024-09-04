@@ -1,4 +1,6 @@
-﻿namespace Gateway.Abstractions
+﻿using CommerceFlow.Protobufs;
+
+namespace Gateway.Abstractions
 {
     public interface IAuthService
     {

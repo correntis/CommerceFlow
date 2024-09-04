@@ -1,10 +1,11 @@
 using AuthService.Infrastructure.Abstractions;
 using Grpc.Core;
 using Microsoft.IdentityModel.Tokens;
+using CommerceFlow.Protobufs;
 
 namespace AuthService.Services
 {
-    public class AuthServiceImpl : AuthService.AuthServiceBase
+    public class AuthServiceImpl : CommerceFlow.Protobufs.Server.AuthService.AuthServiceBase
     {
         private readonly ILogger<AuthServiceImpl> _logger;
         private readonly ITokenCacheService _cacheService;
