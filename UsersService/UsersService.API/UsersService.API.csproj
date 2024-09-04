@@ -9,12 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\users.proto" GrpcServices="Server" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-    <PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
       <PrivateAssets>all</PrivateAssets>
@@ -30,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\CommerceFlow.Persistence\CommerceFlow.Persistence.csproj" />
+    <ProjectReference Include="..\..\CommerceFlow.Protobufs\CommerceFlow.Protobufs.csproj" />
   </ItemGroup>
 
 </Project>

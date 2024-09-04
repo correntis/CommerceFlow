@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "CommerceFlow.Protobufs";
+option csharp_namespace = "CommerceFlow.Protobufs.Client";
 
 import "empty.proto";
 import "Products/categories.proto";

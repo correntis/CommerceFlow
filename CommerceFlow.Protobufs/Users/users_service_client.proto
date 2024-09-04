@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option csharp_namespace = "CommerceFlow.Protobufs.Client";
+
+import "empty.proto";
+import "Users/users.proto";
+
+service UsersService {
+  rpc Authenticate (AuthenticateRequest) returns (AuthenticateResponse);
+  rpc Create (CreateUserRequest) returns (CreateUserResponse);
+  rpc Update (UpdateUserRequest) returns (UpdateUserResponse);
+  rpc UpdatePassword (UpdatePasswordRequest) returns (UpdatePasswordResponse);
+  rpc Delete (DeleteUserRequest) returns (DeleteUserResponse);
+  rpc Get (GetUserRequest) returns (GetUserResponse);
+  rpc GetAll (Empty) returns (UsersResponse);
+}
+
+

@@ -1,10 +1,10 @@
-using UsersService.Services;
 using Microsoft.EntityFrameworkCore;
 using CommerceFlow.Persistence;
 using CommerceFlow.Persistence.Repositories;
 using CommerceFlow.Persistence.Abstractions;
 using UsersService.API.Abstractions;
 using UsersService.API.Infrastructure;
+using UsersService.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;

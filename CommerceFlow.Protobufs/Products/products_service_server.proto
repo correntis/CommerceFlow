@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option csharp_namespace = "CommerceFlow.Protobufs.Server";
+
+import "empty.proto";
+import "Products/categories.proto";
+import "Products/products.proto";
+
+service ProductsService {
+  rpc CreateCategory (CreateCategoryRequest) returns (CreateCategoryResponse);
+  rpc UpdateCategory (UpdateCategoryRequest) returns (UpdateCategoryResponse);
+  rpc DeleteCategory (DeleteCategoryRequest) returns (DeleteCategoryResponse);
+  rpc GetCategory (GetCategoryRequest) returns (GetCategoryResponse);
+  rpc GetAllCategories (Empty) returns (CategoriesList);
+}
+

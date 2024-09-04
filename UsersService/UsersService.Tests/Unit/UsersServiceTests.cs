@@ -2,12 +2,13 @@ using CommerceFlow.Persistence;
 using CommerceFlow.Persistence.Abstractions;
 using CommerceFlow.Persistence.Entities;
 using CommerceFlow.Persistence.Repositories;
+using CommerceFlow.Protobufs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using UsersService.API.Abstractions;
 using UsersService.API.Infrastructure;
-using UsersService.Services;
+using UsersService.API.Services;
 
 namespace UsersService.Tests.Unit
 {

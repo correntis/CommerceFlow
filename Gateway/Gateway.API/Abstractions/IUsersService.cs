@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Gateway.API.Contracts.Authentication;
 using Gateway.API.Contracts.Users;
+using CommerceFlow.Protobufs;
 
 namespace Gateway.API.Abstractions
 {

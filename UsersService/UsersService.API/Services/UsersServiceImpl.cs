@@ -1,11 +1,12 @@
 using CommerceFlow.Persistence.Abstractions;
 using CommerceFlow.Persistence.Entities;
-using Grpc.Core;
+using CommerceFlow.Protobufs;
 using UsersService.API.Abstractions;
+using Grpc.Core;
 
-namespace UsersService.Services
+namespace UsersService.API.Services
 {
-    public class UsersServiceImpl : UsersService.UsersServiceBase
+    public class UsersServiceImpl : CommerceFlow.Protobufs.Server.UsersService.UsersServiceBase
     {
         private readonly ILogger<UsersServiceImpl> _logger;
         private readonly IUsersRepository _usersRepository;
@@ -25,7 +26,7 @@ namespace UsersService.Services
         {
             var user = await _usersRepository.GetByEmailAsync(request.Email);
 
-            if (user is null)
+            if(user is null)
             {
                 return new AuthenticateResponse()
                 {
@@ -33,7 +34,7 @@ namespace UsersService.Services
                 };
             }
 
-            if (!_passwordHasher.Verify(request.Password, user.HashPassword))
+            if(!_passwordHasher.Verify(request.Password, user.HashPassword))
             {
                 return new AuthenticateResponse()
                 {
@@ -41,11 +42,14 @@ namespace UsersService.Services
                 };
             }
 
-            return new AuthenticateResponse() 
+            return new AuthenticateResponse()
             {
-                User = new() 
-                { 
-                    Id = user.Id, Name = user.Name, Email = user.Email, Role = user.Role.Name,
+                User = new()
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = user.Email,
+                    Role = user.Role.Name,
                     Location = new() { Address = user.Location.Address, City = user.Location.City },
                 }
             };
@@ -53,13 +57,14 @@ namespace UsersService.Services
 
         public override async Task<CreateUserResponse> Create(CreateUserRequest request, ServerCallContext context)
         {
-            if (await _usersRepository.GetByEmailAsync(request.Email) != null)
+            if(await _usersRepository.GetByEmailAsync(request.Email) != null)
             {
                 return new CreateUserResponse()
                 {
                     Error = new()
                     {
-                        Code = StatusCodes.Status409Conflict, Message = "User Already Exists"
+                        Code = StatusCodes.Status409Conflict,
+                        Message = "User Already Exists"
                     }
                 };
             }
@@ -75,13 +80,14 @@ namespace UsersService.Services
 
             var id = await _usersRepository.AddAsync(user);
 
-            if (id == 0)
+            if(id == 0)
             {
                 return new CreateUserResponse()
                 {
-                    Error = new() 
-                    { 
-                        Code = StatusCodes.Status500InternalServerError, Message = "Internal Server Error" 
+                    Error = new()
+                    {
+                        Code = StatusCodes.Status500InternalServerError,
+                        Message = "Internal Server Error"
                     }
                 };
             }
@@ -93,7 +99,7 @@ namespace UsersService.Services
         {
             var rowsAffected = await _usersRepository.DeleteAsync(request.Id);
 
-            if (rowsAffected == 0)
+            if(rowsAffected == 0)
             {
                 return new DeleteUserResponse()
                 {
@@ -118,7 +124,7 @@ namespace UsersService.Services
 
             var rowsAffected = await _usersRepository.UpdateAsync(user);
 
-            if (rowsAffected == 0)
+            if(rowsAffected == 0)
             {
                 return new UpdateUserResponse()
                 {
@@ -145,7 +151,7 @@ namespace UsersService.Services
         {
             var user = await _usersRepository.GetAsync(request.Id);
 
-            if (user is null)
+            if(user is null)
             {
                 return new GetUserResponse()
                 {
@@ -153,8 +159,8 @@ namespace UsersService.Services
                 };
             }
 
-            return new GetUserResponse() 
-            { 
+            return new GetUserResponse()
+            {
                 User = new()
                 {
                     Id = user.Id,
@@ -166,13 +172,13 @@ namespace UsersService.Services
                 }
             };
         }
-        
-        public override async Task<UsersResponse> GetAll(Empty request, ServerCallContext context)   
+
+        public override async Task<UsersResponse> GetAll(Empty request, ServerCallContext context)
         {
             var users = await _usersRepository.GetAllAsync();
             var response = new UsersResponse();
 
-            if (users is null)
+            if(users is null)
             {
                 return response;
             }

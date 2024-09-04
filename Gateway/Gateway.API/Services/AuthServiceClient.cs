@@ -1,5 +1,6 @@
 ﻿using Gateway.Abstractions;
-using Gateway.API.Infrastructure;
+using CommerceFlow.Protobufs.Client;
+using CommerceFlow.Protobufs;
 using Grpc.Net.Client;
 
 namespace Gateway.API.Services
@@ -20,7 +21,7 @@ namespace Gateway.API.Services
         {
             using var channel = GrpcChannel.ForAddress(address);
             var client = new AuthService.AuthServiceClient(channel);
-
+          
             var request = new CreateTokensRequest
             {
                 UserId = userId,
