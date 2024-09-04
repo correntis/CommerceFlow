@@ -12,8 +12,8 @@ services:
   auth-service:
     container_name: auth-service
     build:
-      context: ./AuthService
-      dockerfile: AuthService.API/Dockerfile
+      context: ./
+      dockerfile: ./AuthService/AuthService.API/Dockerfile
     environment:
       - STORAGE_HOST=redis-tokens
       - STORAGE_PORT=6379
@@ -29,8 +29,8 @@ services:
   gateway:
     container_name: gateway
     build:
-      context: ./Gateway/Gateway.API
-      dockerfile: Dockerfile
+      context: ./
+      dockerfile: ./Gateway/Gateway.API/Dockerfile
     environment:
       - AUTH_HOST=auth-service
       - AUTH_PORT=8080

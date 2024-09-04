@@ -7,9 +7,9 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-
 COPY ["UsersService/UsersService.API/UsersService.API.csproj", "UsersService/UsersService.API/"]
 COPY ["CommerceFlow.Persistence/CommerceFlow.Persistence.csproj", "CommerceFlow.Persistence/"]
+COPY ["CommerceFlow.Protobufs/CommerceFlow.Protobufs.csproj", "CommerceFlow.Protobufs/"]
 
 RUN dotnet restore "UsersService/UsersService.API/UsersService.API.csproj"
 
