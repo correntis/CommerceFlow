@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+option csharp_namespace = "CommerceFlow.Protobufs";
+
+message CreateProductRequest {
+	string name = 1;
+	string description = 2;
+}

@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+option csharp_namespace = "CommerceFlow.Protobufs";
+
+message CategoryMessage {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message CreateCategoryRequest {
+  CategoryMessage category = 1;
+}
+
+message CreateCategoryResponse {
+  int32 id = 2;
+}
+
+message UpdateCategoryRequest {
+  CategoryMessage category = 1;
+}
+
+message UpdateCategoryResponse {
+  bool is_valid = 1; 
+}
+
+message DeleteCategoryRequest {
+  int32 id = 1;
+}
+
+message DeleteCategoryResponse {
+  bool is_valid = 1;
+}
+
+message GetCategoryRequest {
+  int32 id = 1;
+}
+
+message GetCategoryResponse {
+  bool is_valid = 1;
+  CategoryMessage category = 2;
+}
+
+message CategoriesList {
+	repeated CategoryMessage categories = 1;
+}
