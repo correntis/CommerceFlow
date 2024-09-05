@@ -36,6 +36,8 @@ services:
       - AUTH_PORT=8080
       - USERS_HOST=users-service
       - USERS_PORT=8080
+      - PRODUCTS_HOST=products-service
+      - PRODUCTS_PORT=8080
     depends_on:
       - auth-service
       - users-service
@@ -59,6 +61,24 @@ services:
       - commerce-storage
     ports:
       - "5002:8080"
+    networks:
+      - commerceflow
+
+  products-service:
+    container_name: products-service
+    build:
+      context: ./
+      dockerfile: ./ProductsService/ProductsService.API/Dockerfile
+    environment:
+      POSTGRES_DB: "commercedb"
+      POSTGRES_USER: "postgres"
+      POSTGRES_HOST: "commerce-storage"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_PORT: "5432"
+    depends_on:
+      - commerce-storage
+    ports:
+      - "5003:8080"
     networks:
       - commerceflow
 

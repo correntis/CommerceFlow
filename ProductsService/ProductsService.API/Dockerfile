@@ -11,7 +11,8 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 COPY ["ProductsService/ProductsService.API/ProductsService.API.csproj", "ProductsService/ProductsService.API/"]
-COPY ["CommerceFlow.Persistence/CommerceFlow.Persistence.csproj", "CommerceFlow.Persistence"]
+COPY ["CommerceFlow.Persistence/CommerceFlow.Persistence.csproj", "CommerceFlow.Persistence/"]
+COPY ["CommerceFlow.Protobufs/CommerceFlow.Protobufs.csproj", "CommerceFlow.Protobufs/"]
 RUN dotnet restore "ProductsService/ProductsService.API/ProductsService.API.csproj"
 
 COPY . .
