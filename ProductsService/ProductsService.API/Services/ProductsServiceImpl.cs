@@ -5,7 +5,7 @@ using Grpc.Core;
 
 namespace ProductsService.API.Services
 {
-    public class ProductsServiceImpl : CommerceFlow.Protobufs.ProductsService.ProductsServiceBase
+    public class ProductsServiceImpl : CommerceFlow.Protobufs.Server.ProductsService.ProductsServiceBase
     {
         private readonly ILogger<ProductsServiceImpl> _logger;
         private readonly IProductsRepository _productsRepository;

@@ -28,6 +28,7 @@ services.AddElastic(builder, configuration);
 
 services.AddScoped<IAuthService, AuthServiceClient>();
 services.AddScoped<IUsersService ,UsersServiceClient>();
+services.AddScoped<ProductsServiceClient>();
 services.AddScoped<ITokenService , TokenService>();
 
 
