@@ -7,10 +7,18 @@ import "Products/categories.proto";
 import "Products/products.proto";
 
 service ProductsService {
+  
+  rpc CreateProduct (CreateProductRequest) returns (CreateProductResponse);
+  rpc UpdateProduct (UpdateProductRequest) returns (UpdateProductResponse);
+  rpc DeleteProduct (DeleteProductRequest) returns (DeleteProductResponse);
+  rpc GetProduct (GetProductRequest) returns (GetProductResponse);
+  rpc GetAllProducts (Empty) returns (ProductsList);
+
   rpc CreateCategory (CreateCategoryRequest) returns (CreateCategoryResponse);
   rpc UpdateCategory (UpdateCategoryRequest) returns (UpdateCategoryResponse);
   rpc DeleteCategory (DeleteCategoryRequest) returns (DeleteCategoryResponse);
   rpc GetCategory (GetCategoryRequest) returns (GetCategoryResponse);
   rpc GetAllCategories (Empty) returns (CategoriesList);
 }
+
 

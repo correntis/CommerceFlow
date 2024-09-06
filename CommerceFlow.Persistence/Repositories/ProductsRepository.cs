@@ -1,4 +1,5 @@
 ﻿using CommerceFlow.Persistence.Abstractions;
+using CommerceFlow.Persistence.Configuration;
 using CommerceFlow.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -26,6 +27,16 @@ namespace CommerceFlow.Persistence.Repositories
 
         public async Task<int> AddAsync(Product product)
         {
+            var categories = new List<Category>();
+
+            foreach (var category in product.Categories)
+            {
+                categories.Add(await _context.Categories.FindAsync(category.Id));    
+            }
+
+            product.Categories.Clear();
+            product.Categories.AddRange(categories);
+
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
 
@@ -46,7 +57,14 @@ namespace CommerceFlow.Persistence.Repositories
             entity.Price = product.Price;
             entity.Stock = product.Stock;
 
-            entity.Categories = product.Categories;
+            var categories = new List<Category>();
+            foreach(var category in product.Categories)
+            {
+                categories.Add(await _context.Categories.FindAsync(category.Id));
+            }
+
+            product.Categories.Clear();
+            product.Categories.AddRange(categories);
 
             var rowsAffected = await _context.SaveChangesAsync();
 
@@ -79,7 +97,7 @@ namespace CommerceFlow.Persistence.Repositories
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<IList<Product>> GetAllAsync()
+        public async Task<List<Product>> GetAllAsync()
         {
             return await _context.Products
                 .Include(p => p.Categories)

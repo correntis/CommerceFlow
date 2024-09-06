@@ -2,7 +2,50 @@ syntax = "proto3";
 
 option csharp_namespace = "CommerceFlow.Protobufs";
 
+import "Products/categories.proto";
+
+message ProductMessage {
+	int32 id = 1;
+	string name = 2;
+	string description = 3;
+	string price = 4;
+	int32 stock = 5;
+	repeated CategoryMessage categories = 6;
+}
+
 message CreateProductRequest {
-	string name = 1;
-	string description = 2;
+	ProductMessage product = 1;
+}
+
+message CreateProductResponse {
+	int32 id = 1;
+}
+
+message UpdateProductRequest {
+	ProductMessage product = 1;
+}
+
+message UpdateProductResponse {
+	bool is_valid = 1;
+}
+
+message DeleteProductRequest {
+	int32 id = 1;
+}
+
+message DeleteProductResponse {
+	bool is_valid = 1;
+}
+
+message GetProductRequest {
+	int32 id = 1;
+}
+
+message GetProductResponse {
+	bool is_valid = 1;
+	ProductMessage product = 2;
+}
+
+message ProductsList {
+	repeated ProductMessage products = 1;
 }
