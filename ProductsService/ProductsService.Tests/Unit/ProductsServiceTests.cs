@@ -2,6 +2,7 @@ using CommerceFlow.Persistence;
 using CommerceFlow.Persistence.Abstractions;
 using CommerceFlow.Persistence.Repositories;
 using CommerceFlow.Protobufs;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -34,6 +35,61 @@ namespace ProductsService.Tests
             _productsRepository = new ProductsRepository(_context, _contextLogger.Object);
 
             _productsService = new ProductsServiceImpl(_productsServiceLogger.Object, _productsRepository, _categoriesRepository);
+        }
+
+        [Fact]
+        public async Task CreateProductWithCategory()
+        {
+            var categoryMessage = CreateCategoryMessage(10);
+            var createCategoryRequest = new CreateCategoryRequest() { Category = categoryMessage };
+
+            var createCategoryResponse = await _productsService.CreateCategory(createCategoryRequest, null);
+
+            Assert.NotNull(createCategoryResponse);
+
+
+           var productMessage = CreateProductMessage(1);
+            categoryMessage.Id = createCategoryResponse.Id;
+
+            productMessage.Categories.Add(categoryMessage);
+
+            var createProductRequest = new CreateProductRequest() { Product = productMessage };
+            var createProductResponse = await _productsService.CreateProduct(createProductRequest, null);
+
+            Assert.NotNull(createProductResponse);
+        }
+
+
+        [Fact]
+        public async Task UpdateProductWithCategory()
+        {
+            var categoryMessage = CreateCategoryMessage(10);
+            var createCategoryRequest = new CreateCategoryRequest() { Category = categoryMessage };
+
+            var createCategoryResponse = await _productsService.CreateCategory(createCategoryRequest, null);
+
+            Assert.NotNull(createCategoryResponse);
+
+
+            var productMessage = CreateProductMessage(1);
+            categoryMessage.Id = createCategoryResponse.Id;
+
+            productMessage.Categories.Add(categoryMessage);
+
+            var createProductRequest = new CreateProductRequest() { Product = productMessage };
+            var createProductResponse = await _productsService.CreateProduct(createProductRequest, null);
+
+            Assert.NotNull(createProductResponse);
+
+            productMessage.Id = createProductResponse.Id;
+            productMessage.Categories.Clear();
+            productMessage.Name = "test";
+            
+            var updateProductRequest = new UpdateProductRequest() { Product = productMessage };
+            var updateProductResponse = await _productsService.UpdateProduct(updateProductRequest, null);
+
+            Assert.NotNull(updateProductResponse);
+            Assert.True(updateProductResponse.IsValid);
         }
 
         [Fact]
@@ -130,6 +186,17 @@ namespace ProductsService.Tests
             { 
                 Name = "name" + i,
                 Description = "description" + i,
+            };
+        }
+
+        public ProductMessage CreateProductMessage(int i)
+        {
+            return new ProductMessage
+            {
+                Name = "name" + i,
+                Description = "description" + i,
+                Stock = i,
+                Price = "123"
             };
         }
     }
