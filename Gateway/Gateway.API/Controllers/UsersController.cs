@@ -27,18 +27,18 @@ namespace Gateway.API.Controllers
 
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserDto userDto)
+        public async Task<IActionResult> Update(int id, [FromBody] UserDto userDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var result = await _usersService.UpdateAsync(id, userDto);
+            var isSuccess = await _usersService.UpdateAsync(id, userDto);
 
-            if (result.IsFailure)
+            if (!isSuccess)
             {
-                return StatusCode(result.Error.Code, result.Error.Message);
+                return StatusCode(404, "User Not Found");
             }
 
             return Ok($"User updated");
@@ -46,7 +46,7 @@ namespace Gateway.API.Controllers
 
         [HttpPut("{id}/role")]
         [Authorize(Roles = UserRoles.Admin)]
-        public async Task<IActionResult> UpdateUserRole(int id)
+        public async Task<IActionResult> UpdateRole(int id)
         {
             if(!ModelState.IsValid)
             {
@@ -55,34 +55,31 @@ namespace Gateway.API.Controllers
 
             // TODO: Implement role update
 
-            return Ok($"User role updated" + id);
+            return Ok($"User role updated");
         }
 
         [HttpDelete("{id}")]
         [Authorize]
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var result = await _usersService.DeleteAsync(id);
+            var isSuccess = await _usersService.DeleteAsync(id);
 
-            if (result.IsFailure)
+            if (isSuccess)
             {
-                return StatusCode(result.Error.Code, result.Error.Message);
+                return Ok($"User deleted");
             }
-
-            
-
-            return Ok($"User deleted");
+            return StatusCode(404, "User Not Found");
         }
 
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<IActionResult> GetUser(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var result = await _usersService.GetAsync(id);
 
             if (result.IsFailure)
             {
-                return StatusCode(result.Error.Code, result.Error.Message);
+                return StatusCode(404, "User Not Found");
             }
 
             return Ok(result.Value);
@@ -91,7 +88,7 @@ namespace Gateway.API.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<List<UserDto>>> GetAllUsers()
+        public async Task<ActionResult<List<UserDto>>> GetAll()
         {
             var users = await _usersService.GetAllAsync();
 

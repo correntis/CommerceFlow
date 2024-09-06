@@ -35,6 +35,5 @@
 		<Protobuf Include="Authentication\auth.proto" GrpcServices="None" />
 
 		<Protobuf Include="empty.proto" GrpcServices="None" />
-		<Protobuf Include="error.proto" GrpcServices="None" />
 	</ItemGroup>
 </Project>

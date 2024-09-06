@@ -64,14 +64,14 @@ namespace Gateway.API.Services
             return response;
         }
 
-        public async Task<VerifyPasswordResetResponse> VerifyPasswordReset(string token)
+        public async Task<VerifyPasswordResetResponse> VerifyPasswordReset(string resetToken)
         {
             using var channel = GrpcChannel.ForAddress(address);
             var client = new AuthService.AuthServiceClient(channel);
 
             var request = new VerifyPasswordResetRequest
             {
-                Token = token
+                ResetToken = resetToken
             };
 
             var response = await client.VerifyPasswordResetAsync(request);

@@ -7,12 +7,12 @@ namespace Gateway.API.Abstractions
 {
     public interface IUsersService
     {
-        Task<Result<UserResponse, Error>> Authenticate(LoginRequest loginRequest);
-        Task<Result<int, Error>> CreateAsync(RegisterRequest registerRequest);
-        Task<Result<bool, Error>> DeleteAsync(int userId);
-        Task<List<UserResponse>> GetAllAsync();
-        Task<Result<UserResponse, Error>> GetAsync(int userId);
-        Task<Result<bool, Error>> UpdateAsync(int userId, UserDto userRequest);
+        Task<Result<UserMessage, bool>> AuthenticateAsync(LoginRequest loginRequest);
+        Task<Result<int, bool>> CreateAsync(RegisterRequest registerRequest);
+        Task<bool> DeleteAsync(int userId);
+        Task<UsersList> GetAllAsync();
+        Task<Result<UserMessage, bool>> GetAsync(int userId);
+        Task<bool> UpdateAsync(int userId, UserDto userRequest);
         Task<bool> UpdatePasswordAsync(string email, string password);
     }
 }

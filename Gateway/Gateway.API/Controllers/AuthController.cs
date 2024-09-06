@@ -38,7 +38,7 @@ namespace Gateway.API.Controllers
 
             if (createResult.IsFailure)
             {
-                return StatusCode(createResult.Error.Code, createResult.Error.Message);
+                return StatusCode(StatusCodes.Status400BadRequest, "Incorrect credentials");
             }
 
             var response = await _authService.CreateTokensAsync(createResult.Value, UserRoles.User);
@@ -56,11 +56,11 @@ namespace Gateway.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var authResult = await _usersService.Authenticate(request);
+            var authResult = await _usersService.AuthenticateAsync(request);
 
             if (authResult.IsFailure)
             {
-                return StatusCode(authResult.Error.Code, authResult.Error.Message);
+                return StatusCode(404, "User Not Found");
             }
 
             var response = await _authService.CreateTokensAsync(authResult.Value.Id, authResult.Value.Role);
@@ -80,18 +80,15 @@ namespace Gateway.API.Controllers
 
             var response = await _authService.SendResetPasswordLink(request.Email);
 
-            if (response.Success)
+            if (!response.IsSuccess)
             {
-                return Ok();
+                return StatusCode(500, "Internal Server Error");
             }
-
-            return StatusCode(500, "Internal Server Error");
+            return Ok();
         }
 
         [HttpPatch("password")]
-        public async Task<IActionResult> ResetPassword(
-            [FromQuery] ResetPasswordRequest request
-            )
+        public async Task<IActionResult> ResetPassword([FromQuery] ResetPasswordRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -100,7 +97,7 @@ namespace Gateway.API.Controllers
 
             var response = await _authService.VerifyPasswordReset(request.Token);
 
-            if(!response.Success)
+            if(!response.IsSuccess)
             {
                 return NotFound();
             }

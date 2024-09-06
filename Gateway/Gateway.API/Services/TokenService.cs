@@ -32,7 +32,7 @@ namespace Gateway.API.Services
                 var refreshToken = context.Request.Cookies["refreshToken"];
                 var verifyResponse = await _authService.VerifyAsync(refreshToken, userRole.Value);
 
-                if(verifyResponse.IsValid)
+                if(verifyResponse.IsSuccess)
                 {
                     UpdateTokens(verifyResponse, context.Response);
 

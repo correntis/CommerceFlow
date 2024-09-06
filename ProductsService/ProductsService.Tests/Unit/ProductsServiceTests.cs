@@ -89,7 +89,7 @@ namespace ProductsService.Tests
             var updateProductResponse = await _productsService.UpdateProduct(updateProductRequest, null);
 
             Assert.NotNull(updateProductResponse);
-            Assert.True(updateProductResponse.IsValid);
+            Assert.True(updateProductResponse.IsSuccess);
         }
 
         [Fact]
@@ -103,7 +103,7 @@ namespace ProductsService.Tests
 
             Assert.NotNull(response);
             Assert.NotNull(category);
-            Assert.True(category.IsValid);
+            Assert.True(category.IsSuccess);
             Assert.True(category.Category.Id == response.Id);
         }
 
@@ -132,8 +132,8 @@ namespace ProductsService.Tests
 
             Assert.NotNull(updateResponse);
             Assert.NotNull(categoryResponse);
-            Assert.True(updateResponse.IsValid);
-            Assert.True(categoryResponse.IsValid);
+            Assert.True(updateResponse.IsSuccess);
+            Assert.True(categoryResponse.IsSuccess);
             Assert.Equal(newValue, categoryResponse.Category.Name);
             Assert.Equal(newValue, categoryResponse.Category.Description);
         }
@@ -152,8 +152,8 @@ namespace ProductsService.Tests
             var categoryResponse = await _productsService.GetCategory(new GetCategoryRequest() { Id = response.Id }, null);
 
             Assert.NotNull(deleteResponse);
-            Assert.True(deleteResponse.IsValid);
-            Assert.False(categoryResponse.IsValid);
+            Assert.True(deleteResponse.IsSuccess);
+            Assert.False(categoryResponse.IsSuccess);
         }
 
         [Fact]
@@ -168,7 +168,7 @@ namespace ProductsService.Tests
             var categoryResponse = await _productsService.GetCategory(new GetCategoryRequest() { Id = response.Id }, null);
 
             Assert.NotNull(categoryResponse);
-            Assert.True(categoryResponse.IsValid);
+            Assert.True(categoryResponse.IsSuccess);
         }
 
         [Fact]

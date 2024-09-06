@@ -30,7 +30,7 @@ namespace UsersService.API.Services
             {
                 return new AuthenticateResponse()
                 {
-                    Error = new() { Code = StatusCodes.Status404NotFound, Message = "User Not Found" }
+                    IsSuccess = false
                 };
             }
 
@@ -38,12 +38,13 @@ namespace UsersService.API.Services
             {
                 return new AuthenticateResponse()
                 {
-                    Error = new() { Code = StatusCodes.Status401Unauthorized, Message = "Unauthorized" }
+                    IsSuccess = false
                 };
             }
 
             return new AuthenticateResponse()
             {
+                IsSuccess = true,
                 User = new()
                 {
                     Id = user.Id,
@@ -61,11 +62,7 @@ namespace UsersService.API.Services
             {
                 return new CreateUserResponse()
                 {
-                    Error = new()
-                    {
-                        Code = StatusCodes.Status409Conflict,
-                        Message = "User Already Exists"
-                    }
+                    IsSuccess = false
                 };
             }
 
@@ -84,28 +81,20 @@ namespace UsersService.API.Services
             {
                 return new CreateUserResponse()
                 {
-                    Error = new()
-                    {
-                        Code = StatusCodes.Status500InternalServerError,
-                        Message = "Internal Server Error"
-                    }
+                    IsSuccess = false
                 };
             }
 
-            return new CreateUserResponse() { Id = id };
+            return new CreateUserResponse() 
+            { 
+                IsSuccess = true, 
+                Id = id 
+            };
         }
 
         public override async Task<DeleteUserResponse> Delete(DeleteUserRequest request, ServerCallContext context)
         {
             var rowsAffected = await _usersRepository.DeleteAsync(request.Id);
-
-            if(rowsAffected == 0)
-            {
-                return new DeleteUserResponse()
-                {
-                    Error = new() { Code = StatusCodes.Status404NotFound, Message = "User Not Found" }
-                };
-            }
 
             return new() { IsSuccess = Convert.ToBoolean(rowsAffected) };
         }
@@ -114,23 +103,14 @@ namespace UsersService.API.Services
         {
             var user = new User
             {
-                Id = request.Id,
-                Name = request.Name,
-                Email = request.Email,
-                Phone = request.Phone,
-                HashPassword = _passwordHasher.Hash(request.Password),
-                Location = new() { Address = request?.Location.Address, City = request?.Location.City }
+                Id = request.User.Id,
+                Name = request.User.Name,
+                Email = request.User.Email,
+                Phone = request.User.Phone,
+                Location = new() { Address = request.User.Location.Address, City = request.User.Location.City }
             };
 
             var rowsAffected = await _usersRepository.UpdateAsync(user);
-
-            if(rowsAffected == 0)
-            {
-                return new UpdateUserResponse()
-                {
-                    Error = new() { Code = StatusCodes.Status404NotFound, Message = "User Not Found" }
-                };
-            }
 
             return new() { IsSuccess = Convert.ToBoolean(rowsAffected) };
         }
@@ -155,12 +135,13 @@ namespace UsersService.API.Services
             {
                 return new GetUserResponse()
                 {
-                    Error = new() { Code = StatusCodes.Status404NotFound, Message = "User Not Found" }
+                    IsSuccess = false
                 };
             }
 
             return new GetUserResponse()
             {
+                IsSuccess = true,
                 User = new()
                 {
                     Id = user.Id,
@@ -173,17 +154,17 @@ namespace UsersService.API.Services
             };
         }
 
-        public override async Task<UsersResponse> GetAll(Empty request, ServerCallContext context)
+        public override async Task<UsersList> GetAll(Empty request, ServerCallContext context)
         {
             var users = await _usersRepository.GetAllAsync();
-            var response = new UsersResponse();
+            var response = new UsersList();
 
             if(users is null)
             {
                 return response;
             }
 
-            response.Users.AddRange(users.Select(user => new UserResponse
+            response.Users.AddRange(users.Select(user => new UserMessage
             {
                 Id = user.Id,
                 Name = user.Name,

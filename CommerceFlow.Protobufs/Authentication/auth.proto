@@ -18,10 +18,9 @@ message VerifyRequest{
 }
 
 message VerifyResponse{
-	bool is_valid = 1;
-	int32 user_id = 2;
-	string access_token = 3;
-	string refresh_token = 4;
+	bool is_success = 1;
+	string access_token = 2;
+	string refresh_token = 3;
 }
 
 message SendPasswordResetLinkRequest{
@@ -29,13 +28,13 @@ message SendPasswordResetLinkRequest{
 }
 
 message SendPasswordResetLinkResponse{
-	bool success = 1;
+	bool is_success = 1;
 }
 
 message VerifyPasswordResetRequest{
-	string token = 1;
+	string reset_token = 1;
 }
 
 message VerifyPasswordResetResponse{
-	bool success = 1;
+	bool is_success = 1;
 }

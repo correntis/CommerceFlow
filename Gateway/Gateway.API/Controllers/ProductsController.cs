@@ -1,4 +1,5 @@
-﻿using Gateway.API.Contracts.Products;
+﻿using Gateway.API.Abstractions;
+using Gateway.API.Contracts.Products;
 using Gateway.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,11 +10,11 @@ namespace Gateway.API.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly ILogger<ProductsController> _logger;
-        private readonly ProductsServiceClient _productsService;
+        private readonly IProductsService _productsService;
 
         public ProductsController(
             ILogger<ProductsController> logger,
-            ProductsServiceClient productsService
+            IProductsService productsService
             )
         {
             _logger = logger;
@@ -23,14 +24,29 @@ namespace Gateway.API.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateProduct(ProductRequest request)
         {
-            var id = await _productsService.CreateProductAsync(request);
-            
-            return Ok(id);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var response = await _productsService.CreateProductAsync(request);
+
+            if (response.IsFailure)
+            {
+                return StatusCode(500, "Internal Server Error");
+            }
+
+            return Ok(response.Value);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateProduct(int id , ProductRequest request)
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             if (await _productsService.UpdateProductAsync(id, request))
             {
                 return Ok();  
@@ -54,7 +70,12 @@ namespace Gateway.API.Controllers
         {
             var response = await _productsService.GetProductAsync(id);
 
-            return Ok(response);
+            if(response.IsFailure)
+            {
+                return StatusCode(404, "Product Not Found");
+            }
+
+            return Ok(response.Value);
         }
 
         [HttpGet]

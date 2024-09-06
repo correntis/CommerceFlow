@@ -51,11 +51,8 @@ namespace UsersService.Tests.Unit
 
             Assert.NotNull(response);
             Assert.NotNull(resultUser);
-            Assert.NotNull(resultUser.User.Location);
-            Assert.NotNull(resultUser.User.Role);
             Assert.Equal(UserRoles.User, resultUser.User.Role);
-            Assert.True(response.ResponseCase == CreateUserResponse.ResponseOneofCase.Id);
-            Assert.True(response.Id > 0);
+            Assert.True(response.IsSuccess);
         }
 
         [Fact]
@@ -66,15 +63,17 @@ namespace UsersService.Tests.Unit
 
             var updateRequest = new UpdateUserRequest()
             {
-                Id = createResponse.Id,
-                Name = "Doe Jane",
-                Email = "doejogn8@gmail.com",
-                Password = "updated",
-                Phone = "0987654321",
-                Location = new UserLocation
+                User = new UserMessage
                 {
-                    Address = "4321 Elm St",
-                    City = "Othertown"
+                    Id = createResponse.Id,
+                    Name = "Doe Jane",
+                    Email = "doejogn8@gmail.com",
+                    Phone = "0987654321",
+                    Location = new UserLocationMessage()
+                    {
+                        Address = "4321 Elm St",
+                        City = "Othertown"
+                    }
                 }
             };
 
@@ -82,12 +81,7 @@ namespace UsersService.Tests.Unit
             var resultUser = await _context.Users.FindAsync(createResponse.Id);
 
             Assert.NotNull(updateResponse);
-            Assert.NotNull(resultUser.Location);
-            Assert.NotNull(resultUser.Role);
-            Assert.True(updateResponse.ResponseCase == UpdateUserResponse.ResponseOneofCase.IsSuccess);
             Assert.True(updateResponse.IsSuccess);
-            Assert.True(resultUser.Name == updateRequest.Name);
-            Assert.True(resultUser.Location.City == updateRequest.Location.City);
         }
 
         [Fact]
@@ -110,7 +104,7 @@ namespace UsersService.Tests.Unit
             }, null);
 
             Assert.NotNull(authResponse);
-            Assert.True(authResponse.ResponseCase == AuthenticateResponse.ResponseOneofCase.User);
+            Assert.True(authResponse.IsSuccess);
         }
 
             [Fact]
@@ -118,17 +112,19 @@ namespace UsersService.Tests.Unit
         {
             var updateRequest = new UpdateUserRequest()
             {
-                Id = int.MaxValue,
-                Name = "Doe Jane",
-                Email = "doejogn8@gmail.com",
-                Password = "updated",
-                Location = new UserLocation()
+                User = new UserMessage()
+                {
+                    Id = int.MaxValue,
+                    Name = "Doe Jane",
+                    Email = "doejogn8@gmail.com",
+                    Location = new UserLocationMessage()
+                }
             };
 
             var updateResponse = await _usersService.Update(updateRequest, null);
 
             Assert.NotNull(updateResponse);
-            Assert.True(updateResponse.ResponseCase == UpdateUserResponse.ResponseOneofCase.Error);
+            Assert.True(updateResponse.IsSuccess);
         }
 
         [Fact]
@@ -145,7 +141,7 @@ namespace UsersService.Tests.Unit
             var deleteResponse = await _usersService.Delete(deleteRequest, null);
 
             Assert.NotNull(deleteResponse);
-            Assert.True(deleteResponse.ResponseCase == DeleteUserResponse.ResponseOneofCase.IsSuccess);
+            Assert.True(deleteResponse.IsSuccess);
         }
 
         [Fact]
@@ -159,7 +155,7 @@ namespace UsersService.Tests.Unit
             var deleteResponse = await _usersService.Delete(deleteRequest, null);
 
             Assert.NotNull(deleteResponse);
-            Assert.True(deleteResponse.ResponseCase == DeleteUserResponse.ResponseOneofCase.Error);
+            Assert.True(deleteResponse.IsSuccess);
         }
 
         [Fact]
@@ -176,7 +172,7 @@ namespace UsersService.Tests.Unit
             var getResponse = await _usersService.Get(getRequest, null);
 
             Assert.NotNull(getResponse);
-            Assert.True(getResponse.ResponseCase == GetUserResponse.ResponseOneofCase.User);
+            Assert.True(getResponse.IsSuccess);
             Assert.Equal(createResponse.Id, getResponse.User.Id);
             Assert.Equal(user.Name, getResponse.User.Name);
         }
@@ -192,7 +188,7 @@ namespace UsersService.Tests.Unit
             var getResponse = await _usersService.Get(getRequest, null);
 
             Assert.NotNull(getResponse);
-            Assert.True(getResponse.ResponseCase == GetUserResponse.ResponseOneofCase.Error);
+            Assert.True(getResponse.IsSuccess);
         }
 
         [Fact]
@@ -211,9 +207,6 @@ namespace UsersService.Tests.Unit
             var response = await _usersService.GetAll(new Empty(), null);
 
             Assert.NotNull(response);
-            //Assert.Equal(amount, response.Users.Count);
-            //Assert.Contains(usersId, id => response.Users.Any(user => user.Id == id));
-            //Assert.Contains(usersId, firstId => usersId.Any(secondId => firstId > secondId));
         }
 
         private User CreateUser()

@@ -2,32 +2,28 @@ syntax = "proto3";
 
 option csharp_namespace = "CommerceFlow.Protobufs";
 
-import "error.proto";
-
-message UserLocation {
+message UserLocationMessage {
   string address = 1;
   string city = 2;
 }
 
-message UserResponse{
+message UserMessage{
   int32 id = 1;
   string name = 2;
   string email = 3;
   string phone = 4;
   string role = 5;
-  UserLocation location = 6;
+  UserLocationMessage location = 6;
 }
 
 message AuthenticateRequest{
-	string email = 1;
-	string password = 2;
+  string email = 1;
+  string password = 2;
 }
 
 message AuthenticateResponse{
-	oneof response {
-		UserResponse user = 1;
-		Error error = 2;
-	}
+  bool is_success = 1;  
+  UserMessage user = 2;
 }
 
 message CreateUserRequest {
@@ -37,26 +33,16 @@ message CreateUserRequest {
 }
 
 message CreateUserResponse {
-  oneof response {
-	  int32 id = 1;
-	  Error error = 2;
-  }
+  bool is_success = 1;
+  int32 id = 2;
 }
 
 message UpdateUserRequest {
-  int32 id = 1;
-  string name = 2;
-  string email = 3;
-  string password = 4;
-  string phone = 5;
-  UserLocation location = 7;
+  UserMessage user = 1;
 }
 
 message UpdateUserResponse {
-  oneof response {
-	  bool is_success = 1;
-	  Error error = 2;
-  }
+  bool is_success = 1;
 }
 
 message UpdatePasswordRequest {
@@ -65,7 +51,7 @@ message UpdatePasswordRequest {
 }
 
 message UpdatePasswordResponse {
-	bool is_success = 1;
+  bool is_success = 1;
 }
 
 message DeleteUserRequest {
@@ -73,23 +59,18 @@ message DeleteUserRequest {
 }
 
 message DeleteUserResponse {
-  oneof response {
-	  bool is_success = 1;
-	  Error error = 2;
-  }}
+  bool is_success = 1;
+}
 
 message GetUserRequest{
   int32 id = 1;
 }
 
 message GetUserResponse{
-  oneof response {
-	  UserResponse user = 1;
-	  Error error = 2;
-  }
+  bool is_success = 1;
+  UserMessage user = 2;
 }
 
-
-message UsersResponse{
-	repeated UserResponse users = 1;
+message UsersList{
+  repeated UserMessage users = 1;
 }

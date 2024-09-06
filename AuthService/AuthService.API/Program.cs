@@ -13,8 +13,6 @@ configuration
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
-Console.WriteLine(builder.Environment.EnvironmentName);
-
 services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
 services.Configure<EmailOptions>(configuration.GetSection(nameof(EmailOptions)));
 

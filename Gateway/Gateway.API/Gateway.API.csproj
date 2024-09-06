@@ -8,6 +8,10 @@
     <DockerfileContext>.</DockerfileContext>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Services\invhthis.5s5~" />
+  </ItemGroup>
+
 	<ItemGroup>
 		<PackageReference Include="CSharpFunctionalExtensions" Version="2.42.5" />
 		<PackageReference Include="Elastic.Clients.Elasticsearch" Version="8.15.5" />

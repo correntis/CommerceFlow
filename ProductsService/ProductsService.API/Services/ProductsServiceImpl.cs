@@ -45,6 +45,7 @@ namespace ProductsService.API.Services
 
             return new CreateProductResponse()
             {
+                IsSuccess = true,
                 Id = id
             };
         }
@@ -70,14 +71,14 @@ namespace ProductsService.API.Services
 
             var rowsAffected = await _productsRepository.UpdateAsync(product);
 
-            return new UpdateProductResponse() { IsValid = Convert.ToBoolean(rowsAffected) };
+            return new UpdateProductResponse() { IsSuccess = Convert.ToBoolean(rowsAffected) };
         }
         
         public override async Task<DeleteProductResponse> DeleteProduct(DeleteProductRequest request, ServerCallContext context)
         {
-            var isValid = await _productsRepository.DeleteAsync(request.Id);
+            var rowsAffected = await _productsRepository.DeleteAsync(request.Id);
 
-            return new DeleteProductResponse() { IsValid = Convert.ToBoolean(isValid) };
+            return new DeleteProductResponse() { IsSuccess = Convert.ToBoolean(rowsAffected) };
         }
 
         public override async Task<GetProductResponse> GetProduct(GetProductRequest request, ServerCallContext context)
@@ -88,7 +89,7 @@ namespace ProductsService.API.Services
             {
                 return new GetProductResponse()
                 {
-                    IsValid = false
+                    IsSuccess = false
                 };
             }
 
@@ -112,7 +113,7 @@ namespace ProductsService.API.Services
 
             return new GetProductResponse()
             {
-                IsValid = true,
+                IsSuccess = true,
                 Product = productMessage
             };
         }
@@ -163,7 +164,11 @@ namespace ProductsService.API.Services
             
             var id = await _categoriesRepository.AddAsync(category);
 
-            return new CreateCategoryResponse() { Id = id };
+            return new CreateCategoryResponse() 
+            { 
+                IsSuccess = true, 
+                Id = id 
+            };
         }
 
         public override async Task<UpdateCategoryResponse> UpdateCategory(UpdateCategoryRequest request, ServerCallContext context)
@@ -179,7 +184,7 @@ namespace ProductsService.API.Services
 
             return new UpdateCategoryResponse()
             {
-                IsValid = Convert.ToBoolean(rowsAffected)
+                IsSuccess = Convert.ToBoolean(rowsAffected)
             };
         }
 
@@ -189,7 +194,7 @@ namespace ProductsService.API.Services
 
             return new DeleteCategoryResponse()
             {
-                IsValid = Convert.ToBoolean(rowsAffected)
+                IsSuccess = Convert.ToBoolean(rowsAffected)
             };
         }
 
@@ -199,12 +204,12 @@ namespace ProductsService.API.Services
 
             if (category is null)
             {
-                return new GetCategoryResponse() { IsValid = false };
+                return new GetCategoryResponse() { IsSuccess = false };
             }
 
             return new GetCategoryResponse()
             {
-                IsValid = true,
+                IsSuccess = true,
                 Category = new CategoryMessage()
                 {
                     Id = category.Id,

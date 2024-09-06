@@ -1,5 +1,8 @@
 ﻿using CommerceFlow.Protobufs;
+using CSharpFunctionalExtensions;
+using Elastic.Clients.Elasticsearch.Core.Bulk;
 using Elastic.Clients.Elasticsearch.Nodes;
+using Gateway.API.Abstractions;
 using Gateway.API.Contracts.Categories;
 using Gateway.API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -10,11 +13,11 @@ namespace Gateway.API.Controllers
     [Route("/categories")]
     public class CategoriesController : ControllerBase
     {
-        private readonly ProductsServiceClient _productsService;
+        private readonly IProductsService _productsService;
         private readonly ILogger<CategoriesController> _logger;
 
         public CategoriesController(
-            ProductsServiceClient productsService,
+            IProductsService productsService,
             ILogger<CategoriesController> logger)
         {
             _productsService = productsService;
@@ -22,17 +25,24 @@ namespace Gateway.API.Controllers
         }
 
         [HttpPost]
-        public async Task<int> CreateCategory(CategoryRequest request)
+        public async Task<IActionResult> CreateCategory(CategoryRequest request)
         {
-            return await _productsService.CreateCategoryAsync(request);
+            var response =  await _productsService.CreateCategoryAsync(request);
+
+            if (response.IsFailure)
+            {
+                return StatusCode(500, "Internal Server Error");
+            }
+
+            return Ok(response.Value);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(int id, CategoryRequest request)
         {
-            var isValid = await _productsService.UpdateCategoryAsync(id, request);
+            var isSuccess = await _productsService.UpdateCategoryAsync(id, request);
 
-            if (!isValid)
+            if (!isSuccess)
             {
                 return StatusCode(404, "Category Not Found");
             }
@@ -43,9 +53,9 @@ namespace Gateway.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            var isValid = await _productsService.DeleteCategoryAsync(id);
+            var isSuccess = await _productsService.DeleteCategoryAsync(id);
 
-            if(!isValid)
+            if(!isSuccess)
             {
                 return StatusCode(404, "Category Not Found");
             }
@@ -54,7 +64,7 @@ namespace Gateway.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CategoryMessage>> GetCategory(int id)
+        public async Task<IActionResult> GetCategory(int id)
         {
             var response = await _productsService.GetCategoryAsync(id);
 
@@ -67,7 +77,7 @@ namespace Gateway.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<CategoryMessage>>> GetAllCategories()
+        public async Task<IActionResult> GetAllCategories()
         {
             var categories = await _productsService.GetAllCategoriesAsync();
 

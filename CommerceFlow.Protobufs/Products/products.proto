@@ -18,7 +18,8 @@ message CreateProductRequest {
 }
 
 message CreateProductResponse {
-	int32 id = 1;
+	bool is_success = 1;
+	int32 id = 2;
 }
 
 message UpdateProductRequest {
@@ -26,7 +27,7 @@ message UpdateProductRequest {
 }
 
 message UpdateProductResponse {
-	bool is_valid = 1;
+	bool is_success = 1;
 }
 
 message DeleteProductRequest {
@@ -34,7 +35,7 @@ message DeleteProductRequest {
 }
 
 message DeleteProductResponse {
-	bool is_valid = 1;
+	bool is_success = 1;
 }
 
 message GetProductRequest {
@@ -42,7 +43,7 @@ message GetProductRequest {
 }
 
 message GetProductResponse {
-	bool is_valid = 1;
+	bool is_success = 1;
 	ProductMessage product = 2;
 }
 

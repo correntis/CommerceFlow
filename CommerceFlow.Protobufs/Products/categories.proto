@@ -13,7 +13,8 @@ message CreateCategoryRequest {
 }
 
 message CreateCategoryResponse {
-  int32 id = 1;
+  bool is_success = 1;
+  int32 id = 2;
 }
 
 message UpdateCategoryRequest {
@@ -21,7 +22,7 @@ message UpdateCategoryRequest {
 }
 
 message UpdateCategoryResponse {
-  bool is_valid = 1; 
+  bool is_success = 1; 
 }
 
 message DeleteCategoryRequest {
@@ -29,7 +30,7 @@ message DeleteCategoryRequest {
 }
 
 message DeleteCategoryResponse {
-  bool is_valid = 1;
+  bool is_success = 1;
 }
 
 message GetCategoryRequest {
@@ -37,7 +38,7 @@ message GetCategoryRequest {
 }
 
 message GetCategoryResponse {
-  bool is_valid = 1;
+  bool is_success = 1;
   CategoryMessage category = 2;
 }
 

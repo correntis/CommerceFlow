@@ -27,9 +27,6 @@ namespace AuthService.Services
 
         public override async Task<CreateTokensResponse> CreateTokens(CreateTokensRequest request, ServerCallContext context)
         {
-
-            _logger.LogInformation("Create access and refresh tokens...");
-
             var accessToken = IssueAccessToken(request.UserId, request.UserRole);
             var refreshToken = await IssueRefreshTokenAsync(request.UserId);
 
@@ -39,23 +36,18 @@ namespace AuthService.Services
                 RefreshToken = refreshToken
             };
 
-            _logger.LogInformation("Tokens created...");
             return createTokensResponse;
         }
 
         public override async Task<VerifyResponse> Verify(VerifyRequest request, ServerCallContext context)
         {
-            _logger.LogInformation("Verify refresh token...");
-
             var userIdString = await _cacheService.GetUserIdAsync(request.RefreshToken);
 
             if (userIdString.IsNullOrEmpty()) 
             {
-                _logger.LogInformation("Refresh token doesn't exist in RedisCache. Return false");
-
                 return new VerifyResponse
                 {
-                    IsValid = false
+                    IsSuccess = false
                 };
             }
 
@@ -70,8 +62,7 @@ namespace AuthService.Services
             {
                 AccessToken = newAccessToken,
                 RefreshToken = newRefreshToken,
-                UserId = userId,
-                IsValid = true
+                IsSuccess = true
             };
 
             return verifyResponse;
@@ -85,7 +76,7 @@ namespace AuthService.Services
             //TODO Change to frontend Reset Password Page
             //var passwordResetLink = $"http://localhost:3000/reset-password?Email={request.Email}&Token={token}";
 
-            var success = await _emailService.SendEmailAsync(
+            var isSuccess = await _emailService.SendEmailAsync(
                 request.Email,
                 "Reset password in CommerceFlow", 
                 $"Reset your password with token {token}</a>."
@@ -95,22 +86,22 @@ namespace AuthService.Services
 
             return new()
             {
-                Success = success
+                IsSuccess = isSuccess
             };
         }
 
         public override async Task<VerifyPasswordResetResponse> VerifyPasswordReset(VerifyPasswordResetRequest request, ServerCallContext context)
         {
-            var success = await _cacheService.ContainsAsync(request.Token);
+            var isSuccess = await _cacheService.ContainsAsync(request.ResetToken);
 
-            if(success)
+            if(isSuccess)
             {
-                await RemoveTokenFromCacheAsync(request.Token);
+                await RemoveTokenFromCacheAsync(request.ResetToken);
             }
 
             return new VerifyPasswordResetResponse
             {
-                Success = success
+                IsSuccess = isSuccess
             };
         }
 
@@ -121,8 +112,6 @@ namespace AuthService.Services
 
         public async Task<string> IssueRefreshTokenAsync(int userId)
         {
-            _logger.LogInformation("Issue Refresh Token");
-
             var refreshToken = _tokenService.CreateRefreshToken();
 
             await _cacheService.SetTokenAsync(refreshToken, userId.ToString(), DateTime.UtcNow.AddMonths(1));

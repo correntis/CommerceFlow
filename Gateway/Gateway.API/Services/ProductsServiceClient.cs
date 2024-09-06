@@ -3,14 +3,16 @@ using CommerceFlow.Protobufs.Client;
 using CSharpFunctionalExtensions;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.MachineLearning;
+using Gateway.API.Abstractions;
 using Gateway.API.Contracts.Categories;
 using Gateway.API.Contracts.Products;
 using Grpc.Net.Client;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
 namespace Gateway.API.Services
 {
-    public class ProductsServiceClient
+    public class ProductsServiceClient : IProductsService
     {
         private readonly ILogger<ProductsServiceClient> _logger;
         private readonly string address;
@@ -19,11 +21,11 @@ namespace Gateway.API.Services
             ILogger<ProductsServiceClient> logger,
             IConfiguration configuration)
         {
-            logger = _logger;
+            _logger = logger;
             address = $"http://{configuration["PRODUCTS_HOST"]}:{configuration["PRODUCTS_PORT"]}";
         }
 
-        public async Task<int> CreateProductAsync(ProductRequest request)
+        public async Task<Result<int, bool>> CreateProductAsync([FromBody] ProductRequest request)
         {
             var createRequest = new CreateProductRequest()
             {
@@ -53,15 +55,20 @@ namespace Gateway.API.Services
 
             var response = await _productsService.CreateProductAsync(createRequest);
 
+            if(!response.IsSuccess)
+            {
+                return false;
+            }
+
             return response.Id;
         }
 
-        public async Task<bool> UpdateProductAsync(int id, ProductRequest request)
+        public async Task<bool> UpdateProductAsync(int id, [FromBody] ProductRequest request)
         {
             var updateRequest = new UpdateProductRequest()
             {
                 Product = new ProductMessage
-                { 
+                {
                     Id = id,
                     Name = request.Name,
                     Description = request.Description,
@@ -87,7 +94,7 @@ namespace Gateway.API.Services
 
             var response = await _productsService.UpdateProductAsync(updateRequest);
 
-            return response.IsValid;
+            return response.IsSuccess;
         }
 
         public async Task<bool> DeleteProductAsync(int id)
@@ -99,10 +106,10 @@ namespace Gateway.API.Services
 
             var response = await _productsService.DeleteProductAsync(deleteRequest);
 
-            return response.IsValid;
+            return response.IsSuccess;
         }
 
-        public async Task<ProductMessage> GetProductAsync(int id)
+        public async Task<Result<ProductMessage,bool>> GetProductAsync(int id)
         {
             var getRequest = new GetProductRequest() { Id = id };
 
@@ -111,20 +118,25 @@ namespace Gateway.API.Services
 
             var response = await _productsService.GetProductAsync(getRequest);
 
+            if(!response.IsSuccess)
+            {
+                return false;
+            }
+
             return response.Product;
         }
 
-        public async Task<List<ProductMessage>> GetAllProductsAsync()
+        public async Task<ProductsList> GetAllProductsAsync()
         {
             using var channel = GrpcChannel.ForAddress(address);
             var _productsService = new ProductsService.ProductsServiceClient(channel);
 
             var response = await _productsService.GetAllProductsAsync(new Empty());
 
-            return [.. response.Products];
+            return response;
         }
 
-        public async Task<int> CreateCategoryAsync(CategoryRequest request)
+        public async Task<Result<int, bool>> CreateCategoryAsync([FromBody] CategoryRequest request)
         {
             var createRequest = new CreateCategoryRequest()
             {
@@ -140,10 +152,15 @@ namespace Gateway.API.Services
 
             var response = await _productsService.CreateCategoryAsync(createRequest);
 
+            if(!response.IsSuccess)
+            {
+                return false;
+            }
+
             return response.Id;
         }
 
-        public async Task<bool> UpdateCategoryAsync(int id, CategoryRequest request)
+        public async Task<bool> UpdateCategoryAsync(int id, [FromBody] CategoryRequest request)
         {
             var updateRequest = new UpdateCategoryRequest()
             {
@@ -160,7 +177,7 @@ namespace Gateway.API.Services
 
             var updateResponse = await _productsService.UpdateCategoryAsync(updateRequest);
 
-            return updateResponse.IsValid;
+            return updateResponse.IsSuccess;
         }
 
         public async Task<bool> DeleteCategoryAsync(int id)
@@ -175,10 +192,10 @@ namespace Gateway.API.Services
 
             var deleteResponse = await _productsService.DeleteCategoryAsync(deleteRequest);
 
-            return deleteResponse.IsValid;
+            return deleteResponse.IsSuccess;
         }
 
-        public async Task<Result<CategoryMessage, Error>> GetCategoryAsync(int id)
+        public async Task<Result<CategoryMessage, bool>> GetCategoryAsync(int id)
         {
             var getRequest = new GetCategoryRequest()
             {
@@ -191,22 +208,22 @@ namespace Gateway.API.Services
 
             var updateResponse = await _productsService.GetCategoryAsync(getRequest);
 
-            if (!updateResponse.IsValid)
+            if(!updateResponse.IsSuccess)
             {
-                return new Error() { Code = 404, Message = "Category Not Found" };
+                return false;
             }
 
             return updateResponse.Category;
         }
 
-        public async Task<List<CategoryMessage>> GetAllCategoriesAsync()
+        public async Task<CategoriesList> GetAllCategoriesAsync()
         {
             using var channel = GrpcChannel.ForAddress(address);
             var _productsService = new ProductsService.ProductsServiceClient(channel);
 
             var getAllResponse = await _productsService.GetAllCategoriesAsync(new Empty());
 
-            return [.. getAllResponse.Categories];
+            return getAllResponse;
         }
     }
 }
