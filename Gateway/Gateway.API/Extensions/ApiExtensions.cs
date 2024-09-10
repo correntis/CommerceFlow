@@ -7,11 +7,8 @@ using OpenTelemetry.Resources;
 using Serilog;
 using System.Reflection;
 using System.Text;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Serilog.Sinks.Elasticsearch;
-using Gateway.API.Infrastructure;
+using System.IdentityModel.Tokens.Jwt;
 
 
 namespace Gateway.Extensions
@@ -91,20 +88,25 @@ namespace Gateway.Extensions
                     {
                         OnMessageReceived = context =>
                         {
-                            if (context.HttpContext.Request.Cookies.TryGetValue("accessToken", out var accessToken))
+                            if(context.Request.Cookies.TryGetValue("accessToken", out var accessToken))
                             {
+                                var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(accessToken);
+
+                                if(jwtToken.ValidTo < DateTime.UtcNow)
+                                {
+                                    var tokenService = context.HttpContext.RequestServices.GetRequiredService<ITokenService>();
+                                    var newAccessToken = tokenService.HandleUpdateTokenAsync(context.HttpContext).Result;
+
+                                    if (!string.IsNullOrEmpty(newAccessToken))
+                                    {
+                                        accessToken = newAccessToken;   
+                                    }
+                                }
+
                                 context.Token = accessToken;
                             }
-                            return Task.CompletedTask;
-                        },
-                        OnAuthenticationFailed = async context =>
-                        {
-                            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                            {
-                                var tokenService = context.HttpContext.RequestServices.GetRequiredService<ITokenService>();
 
-                                var success = await tokenService.HandleUpdateTokenAsync(context);
-                            }
+                            return Task.CompletedTask;
                         }
                     };
                 });

@@ -10,15 +10,18 @@ namespace Gateway.API.Services
     public class TokenService : ITokenService
     {
         private readonly IAuthService _authService;
+        private readonly ILogger<TokenService> _logger;
 
         public TokenService(
-            IAuthService authService
+            IAuthService authService,
+            ILogger<TokenService> _logger
             )
         {
             _authService = authService;
+            this._logger = _logger;
         }
 
-        public async Task<bool> HandleUpdateTokenAsync(AuthenticationFailedContext context)
+        public async Task<string> HandleUpdateTokenAsync(HttpContext context)
         {
             if(context.Request.Cookies.ContainsKey("refreshToken"))
             {
@@ -26,7 +29,7 @@ namespace Gateway.API.Services
 
                 if(userRole is null)
                 {
-                    return false;
+                    return null;
                 }
 
                 var refreshToken = context.Request.Cookies["refreshToken"];
@@ -34,13 +37,12 @@ namespace Gateway.API.Services
 
                 if(verifyResponse.IsSuccess)
                 {
-                    UpdateTokens(verifyResponse, context.Response);
-
-                    return true;
+                    UpdateTokens(verifyResponse, context);
+                    return verifyResponse.AccessToken;
                 }
             }
 
-            return false;
+            return null;
         }
 
         private Claim GetUserRoleClaim(string token)
@@ -54,13 +56,13 @@ namespace Gateway.API.Services
             return userRole;
         }
 
-        private void UpdateTokens(VerifyResponse verifyResponse, HttpResponse response)
+        private void UpdateTokens(VerifyResponse verifyResponse, HttpContext context)
         {
-            response.Cookies.Append("accessToken", verifyResponse.AccessToken,
+            context.Response.Cookies.Append("accessToken", verifyResponse.AccessToken,
                 new CookieOptions() { HttpOnly = true, Expires = DateTime.UtcNow.AddMonths(1) }
             );
 
-            response.Cookies.Append("refreshToken", verifyResponse.RefreshToken,
+            context.Response.Cookies.Append("refreshToken", verifyResponse.RefreshToken,
                 new CookieOptions() { HttpOnly = true, Expires = DateTime.UtcNow.AddMonths(1) }
             );
         }

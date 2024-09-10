@@ -4,6 +4,6 @@ namespace Gateway.API.Abstractions
 {
     public interface ITokenService
     {
-        Task<bool> HandleUpdateTokenAsync(AuthenticationFailedContext context);
+        Task<string> HandleUpdateTokenAsync(HttpContext context);
     }
 }
