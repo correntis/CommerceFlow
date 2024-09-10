@@ -111,6 +111,22 @@ namespace Gateway.API.Services
             return response.IsSuccess;
         }
 
+        public async Task<bool> UpdateRoleAsync(int id, string role)
+        {
+            using var channel = GrpcChannel.ForAddress(address);
+            var usersService = new UsersService.UsersServiceClient(channel);
+
+            var request = new UpdateRoleRequest()
+            {
+                Id = id,
+                Role = role
+            };
+
+            var response = await usersService.UpdateRoleAsync(request);
+
+            return response.IsSuccess;
+        }
+
         public async Task<bool> DeleteAsync(int userId)
         {
             using var channel = GrpcChannel.ForAddress(address);

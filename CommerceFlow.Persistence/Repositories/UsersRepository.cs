@@ -60,6 +60,22 @@ namespace CommerceFlow.Persistence.Repositories
             return rowsAffected;
         }
 
+        public async Task<int> UpdateRoleAsync(int id, string role)
+        {
+            var entity = await _context.Users.FindAsync(id);
+
+            if (entity is null)
+            {
+                return 0;
+            }
+
+            entity.Role = new Role() { Name = role }; 
+
+            var rowsAffected = await _context.SaveChangesAsync();
+
+            return rowsAffected;
+        }
+
         public async Task<int> UpdatePasswordAsync(string email, string hashPassword)
         {
             var entity = await _context.Users

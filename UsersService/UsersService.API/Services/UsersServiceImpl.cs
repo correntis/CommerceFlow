@@ -127,6 +127,17 @@ namespace UsersService.API.Services
             };
         }
 
+        public override async Task<UpdateRoleResponse> UpdateRole(UpdateRoleRequest request, ServerCallContext context)
+        {
+
+            var rowsAffected = await _usersRepository.UpdateRoleAsync(request.Id, request.Role);
+
+            return new UpdateRoleResponse()
+            {
+                IsSuccess = Convert.ToBoolean(rowsAffected)
+            };
+        }
+
         public override async Task<GetUserResponse> Get(GetUserRequest request, ServerCallContext context)
         {
             var user = await _usersRepository.GetAsync(request.Id);

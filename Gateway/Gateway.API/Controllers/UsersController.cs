@@ -1,8 +1,4 @@
-﻿using CSharpFunctionalExtensions;
-using Gateway.API;
-using Gateway.API.Contracts.Users;
-using Gateway.API.Contracts;
-using Gateway.API.Services;
+﻿using Gateway.API.Contracts.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Gateway.API.Abstractions;
@@ -46,16 +42,16 @@ namespace Gateway.API.Controllers
 
         [HttpPut("{id}/role")]
         [Authorize(Roles = UserRoles.Admin)]
-        public async Task<IActionResult> UpdateRole(int id)
+        public async Task<IActionResult> UpdateRole(int id, string role)
         {
-            if(!ModelState.IsValid)
+            var isSuccess = await _usersService.UpdateRoleAsync(id, role);
+
+            if(isSuccess)
             {
-                return BadRequest(ModelState);
+                return Ok($"User role updated");
             }
 
-            // TODO: Implement role update
-
-            return Ok($"User role updated");
+            return StatusCode(404, "User Not Found");
         }
 
         [HttpDelete("{id}")]
@@ -68,6 +64,7 @@ namespace Gateway.API.Controllers
             {
                 return Ok($"User deleted");
             }
+
             return StatusCode(404, "User Not Found");
         }
 

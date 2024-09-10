@@ -10,6 +10,7 @@ namespace CommerceFlow.Persistence.Abstractions
         Task<User> GetAsync(int id);
         Task<int> UpdateAsync(User user);
         Task<int> UpdatePasswordAsync(string email, string hashPassword);
+        Task<int> UpdateRoleAsync(int id, string role);
         Task<User> GetByEmailAsync(string email);
     }
 }

@@ -10,6 +10,7 @@ service UsersService {
   rpc Create (CreateUserRequest) returns (CreateUserResponse);
   rpc Update (UpdateUserRequest) returns (UpdateUserResponse);
   rpc UpdatePassword (UpdatePasswordRequest) returns (UpdatePasswordResponse);
+  rpc UpdateRole (UpdateRoleRequest) returns (UpdateRoleResponse);
   rpc Delete (DeleteUserRequest) returns (DeleteUserResponse);
   rpc Get (GetUserRequest) returns (GetUserResponse);
   rpc GetAll (Empty) returns (UsersList);

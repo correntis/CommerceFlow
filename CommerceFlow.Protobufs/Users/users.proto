@@ -54,6 +54,15 @@ message UpdatePasswordResponse {
   bool is_success = 1;
 }
 
+message UpdateRoleRequest {
+  int32 id = 1;
+  string role = 2;
+}
+
+message UpdateRoleResponse {
+  bool is_success = 1;
+}
+
 message DeleteUserRequest {
   int32 id = 1;
 }
