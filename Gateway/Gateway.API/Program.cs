@@ -34,6 +34,14 @@ services.AddScoped<ITokenService , TokenService>();
 
 var app = builder.Build();
 
+app.UseCors(policy =>
+{
+    policy.WithOrigins("http://localhost:4200")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
+});
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -46,12 +54,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseCors(policy =>
-{
-    policy.WithOrigins("http://localhost:4200")
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials();
-});
 
 app.Run();

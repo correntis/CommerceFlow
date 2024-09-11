@@ -1,6 +1,7 @@
 ﻿using Gateway.API.Abstractions;
 using Gateway.API.Contracts.Products;
 using Gateway.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gateway.API.Controllers
@@ -22,6 +23,7 @@ namespace Gateway.API.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult> CreateProduct(ProductRequest request)
         {
             if (!ModelState.IsValid)
@@ -40,6 +42,7 @@ namespace Gateway.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<ActionResult> UpdateProduct(int id , ProductRequest request)
         {
             if(!ModelState.IsValid)
@@ -56,6 +59,7 @@ namespace Gateway.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult> DeleteProduct(int id)
         {
             if (await _productsService.DeleteProductAsync(id))
@@ -66,6 +70,7 @@ namespace Gateway.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult> GetProduct(int id)
         {
             var response = await _productsService.GetProductAsync(id);
@@ -79,6 +84,7 @@ namespace Gateway.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult> GetAllProducts()
         {
             var response = await _productsService.GetAllProductsAsync();
