@@ -61,10 +61,6 @@ namespace Gateway.API.Services
             context.Response.Cookies.Append("accessToken", verifyResponse.AccessToken,
                 new CookieOptions() { HttpOnly = true, Expires = DateTime.UtcNow.AddMonths(1) }
             );
-
-            context.Response.Cookies.Append("refreshToken", verifyResponse.RefreshToken,
-                new CookieOptions() { HttpOnly = true, Expires = DateTime.UtcNow.AddMonths(1) }
-            );
         }
     }
 }

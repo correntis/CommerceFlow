@@ -51,17 +51,13 @@ namespace AuthService.Services
                 };
             }
 
-            await RemoveTokenFromCacheAsync(request.RefreshToken);
-
             var userId = int.Parse(userIdString);
 
             var newAccessToken = IssueAccessToken(userId, request.UserRole);
-            var newRefreshToken = await IssueRefreshTokenAsync(userId);
             
             var verifyResponse = new VerifyResponse
             {
                 AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken,
                 IsSuccess = true
             };
 

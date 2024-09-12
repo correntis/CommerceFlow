@@ -20,7 +20,6 @@ message VerifyRequest{
 message VerifyResponse{
 	bool is_success = 1;
 	string access_token = 2;
-	string refresh_token = 3;
 }
 
 message SendPasswordResetLinkRequest{
